@@ -437,7 +437,7 @@ export default function AboutPage({ setPage }) {
             </p>
             <div className="ab-story-quote">
               <p className="ab-story-quote-text">"We kept asking — why is it so hard to send something from Westlands to Eastleigh and actually know it got there?"</p>
-              <p className="ab-story-quote-attr">— Michael, Co-Founder & CEO</p>
+              <p className="ab-story-quote-attr">— Michael, Co-Founder & CTD</p>
             </div>
             <p className="ab-story-para">
               Charles, who had spent three years building logistics software for a regional freight company, saw the technical gap clearly. <strong>Kenya had riders everywhere</strong> — boda bodas on every corner — but no modern system tying them together. No real-time GPS, no digital proof of delivery, no accountability layer.
@@ -469,8 +469,8 @@ export default function AboutPage({ setPage }) {
               <div className="ab-founder-header">
                 <div className="ab-founder-avatar gold">MK</div>
                 <div>
-                  <div className="ab-founder-name">Michael Kamau</div>
-                  <div className="ab-founder-role">Co-Founder & CEO</div>
+                  <div className="ab-founder-name">Michael KYALO</div>
+                  <div className="ab-founder-role">Co-Founder & CTD</div>
                   <div className="ab-founder-tagline">Operations, growth, and the relentless belief that logistics in Kenya can be world-class.</div>
                 </div>
               </div>
@@ -493,8 +493,8 @@ export default function AboutPage({ setPage }) {
               <div className="ab-founder-header">
                 <div className="ab-founder-avatar sage">CO</div>
                 <div>
-                  <div className="ab-founder-name">Charles Ochieng</div>
-                  <div className="ab-founder-role">Co-Founder & CTO</div>
+                  <div className="ab-founder-name">Charles MWANGI</div>
+                  <div className="ab-founder-role">Co-Founder & CEO</div>
                   <div className="ab-founder-tagline">The engineer who built the spine of SpeedPak — real-time tracking, rider apps, and the API powering 1,200+ businesses.</div>
                 </div>
               </div>

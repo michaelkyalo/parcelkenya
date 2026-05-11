@@ -413,7 +413,7 @@ const videoSteps = [
   },
   {
     n: "02",
-    title: "A rider collects\nat your door",
+    title: "The company transports it to the destination",
     desc: "A verified SpeedPak rider arrives at your scheduled time. Watch the live map as your courier approaches. No waiting around.",
     features: ["Live rider GPS tracking", "Rider ID verification", "Collection within 60 min window"],
     badge: "● COLLECTION",
@@ -422,7 +422,7 @@ const videoSteps = [
   },
   {
     n: "03",
-    title: "Delivered — right\nto their door",
+    title: "Delivered on door — within nairobi only CBD and its environs at a fee",
     desc: "Your recipient gets an SMS + WhatsApp alert. The rider rings the bell and hands over the parcel. Signature captured digitally. Job done.",
     features: ["Digital proof of delivery", "SMS + WhatsApp recipient alert", "Live map confirmation"],
     badge: "● DELIVERED",
@@ -482,23 +482,27 @@ export default function HomePage({ setPage }) {
   return (
     <div className="sp-home">
       <style>{CSS}</style>
+// ONLY CHANGE IS HERE IN NAV ↓↓↓
 
-      {/* NAV */}
-      <nav className={`sp-nav ${scrolled ? "scrolled" : ""}`}>
-        <div className="sp-nav-logo">
-          <div className="sp-nav-logo-dot" />
-          SpeedPak
-        </div>
-        <div className="sp-nav-links">
-          {["Services", "Track", "Pricing", "About"].map(l => (
-            <span key={l} onClick={() => setPage(l.toLowerCase())}>{l}</span>
-          ))}
-        </div>
-        <div className="sp-nav-cta">
-          <button className="btn-ghost-nav" onClick={() => setPage("track")}>Track Parcel</button>
-          <button className="btn-gold-sm" onClick={() => setPage("book")}>Send Now →</button>
-        </div>
-      </nav>
+<nav className={`sp-nav ${scrolled ? "scrolled" : ""}`}>
+  <div className="sp-nav-logo">
+    <div className="sp-nav-logo-dot" />
+    SpeedPak
+  </div>
+
+  {/* ✅ About removed but spacing preserved */}
+  <div className="sp-nav-links"></div>
+
+  <div className="sp-nav-cta">
+    <button className="btn-ghost-nav" onClick={() => setPage("track")}>
+      Track Parcel
+    </button>
+    <button className="btn-gold-sm" onClick={() => setPage("book")}>
+      Send Now →
+    </button>
+  </div>
+</nav>
+      
 
       {/* HERO — single column, no white gap */}
       <section className="sp-hero">

@@ -334,7 +334,7 @@ export default function AppSidebar({ page, setPage }) {
   }
 
   const mainNav = [
-    { id: "home",     label: "Home",         icon: "home"     },
+ 
     { id: "book",     label: "Send Parcel",  icon: "book"     },
     { id: "track",    label: "Track Parcel", icon: "track",   badge: "2"              },
     { id: "coverage", label: "Coverage Map", icon: "coverage" },
@@ -389,12 +389,12 @@ export default function AppSidebar({ page, setPage }) {
           onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
         >
           <div style={s.avatarWrap}>
-            <div style={s.avatar}>JK</div>
+            <div style={s.avatar}></div>
             <div style={s.statusDot} />
           </div>
           <div>
-            <p style={s.userName}>John Kamau</p>
-            <p style={s.userRole}>Personal Account</p>
+            <p style={s.userName}></p>
+            <p style={s.userRole}></p>
           </div>
           <span style={s.userArrow}>↗</span>
         </div>
