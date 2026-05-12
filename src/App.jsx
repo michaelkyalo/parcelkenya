@@ -20,8 +20,7 @@ const PAGES = {
   coverage: CoverPage,
   contact: ContactPage,
   account: AccountPage,
-  admin: AdminPage,
-  services: ServicesPage, // ✅ NOW USED
+  services: ServicesPage,
 };
 
 export default function App() {
@@ -31,10 +30,12 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
+  // Pages that render fullscreen without the shell
   if (page === "landing") return <LandingPage setPage={setPage} />;
-  if (page === "home") return <HomePage setPage={setPage} />;
-  if (page === "about") return <AboutPage setPage={setPage} />;
-  if (page === "book") return <BookPage setPage={setPage} />;
+  if (page === "home")    return <HomePage setPage={setPage} />;
+  if (page === "about")   return <AboutPage setPage={setPage} />;
+  if (page === "book")    return <BookPage setPage={setPage} />;
+  if (page === "admin")   return <AdminPage setPage={setPage} />;
 
   const PageComponent = PAGES[page] ?? TrackPage;
 

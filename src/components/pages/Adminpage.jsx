@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { loadAllBookings } from "./Storage";
+import { loadAllBookings, updateBookingStatus } from "./Storage";
 
 // ── CSS ───────────────────────────────────────────────────────────────────────
 const CSS = `
@@ -50,7 +50,7 @@ body{
   overflow-x:hidden;
 }
 
-/* NAV */
+/* ── NAV ── */
 
 .adm-nav{
   position:sticky;
@@ -60,152 +60,232 @@ body{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 24px;
-  background:rgba(8,9,13,0.95);
+  padding:0 32px;
+  background:rgba(8,9,13,0.97);
   border-bottom:1px solid var(--line);
-  backdrop-filter:blur(18px);
+  backdrop-filter:blur(20px);
 }
 
 .adm-nav-brand{
   display:flex;
   align-items:center;
   gap:10px;
-  font-family:var(--display);
-  font-size:1rem;
+}
+
+.adm-nav-logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 
 .adm-nav-brand-dot{
-  width:8px;
-  height:8px;
+  width:9px;
+  height:9px;
   border-radius:50%;
   background:var(--amber);
-  box-shadow:0 0 14px var(--amber);
+  box-shadow:0 0 16px var(--amber);
+}
+
+.adm-nav-wordmark{
+  font-family:var(--display);
+  font-size:1.05rem;
+  letter-spacing:.02em;
+  color:var(--text);
+}
+
+.adm-nav-divider{
+  width:1px;
+  height:18px;
+  background:var(--line3);
+  margin:0 14px;
 }
 
 .adm-nav-badge{
-  font-size:.55rem;
+  font-size:.52rem;
   font-family:var(--mono);
   text-transform:uppercase;
-  letter-spacing:2px;
-  padding:3px 8px;
+  letter-spacing:2.5px;
+  padding:4px 10px;
   border-radius:999px;
-  background:rgba(224,96,96,.12);
-  color:var(--coral);
-  border:1px solid rgba(224,96,96,.2);
+  background:rgba(212,168,67,.1);
+  color:var(--amber2);
+  border:1px solid rgba(212,168,67,.25);
 }
 
-.adm-nav-right{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.adm-nav-meta{
+  font-size:.72rem;
+  color:var(--text40);
+  font-family:var(--mono);
 }
 
-.adm-nav-btn{
-  border:none;
-  outline:none;
-  cursor:pointer;
-  padding:10px 16px;
-  border-radius:10px;
-  background:var(--ink3);
-  color:var(--text70);
-  border:1px solid var(--line2);
-  font-size:.8rem;
-  transition:.2s;
-}
-
-.adm-nav-btn:hover{
-  background:#1a1f2b;
-  color:white;
-}
-
-/* MAIN */
+/* ── MAIN ── */
 
 .adm-main{
-  padding:32px;
+  padding:36px 32px;
+  max-width:1400px;
+  margin:0 auto;
 }
+
+/* ── HEADER ── */
 
 .adm-header{
-  margin-bottom:28px;
+  margin-bottom:36px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:16px;
 }
 
+.adm-header-left{}
+
 .adm-eyebrow{
-  font-size:.58rem;
+  font-size:.56rem;
   color:var(--amber);
-  letter-spacing:3px;
+  letter-spacing:3.5px;
   text-transform:uppercase;
   font-family:var(--mono);
   margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.adm-eyebrow::before{
+  content:'';
+  display:inline-block;
+  width:18px;
+  height:1px;
+  background:var(--amber);
+  opacity:.7;
 }
 
 .adm-title{
-  font-size:clamp(2rem,4vw,3rem);
+  font-size:clamp(1.8rem,3.5vw,2.6rem);
   font-family:var(--display);
   font-weight:400;
+  line-height:1.15;
 }
 
 .adm-title em{
   color:var(--amber2);
+  font-style:italic;
 }
 
 .adm-subtitle{
   margin-top:8px;
   color:var(--text40);
-  font-size:.9rem;
+  font-size:.85rem;
 }
 
-/* STATS */
+.adm-header-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.adm-refresh-btn{
+  border:none;
+  cursor:pointer;
+  background:var(--ink3);
+  border:1px solid var(--line2);
+  color:var(--text70);
+  padding:10px 18px;
+  border-radius:10px;
+  font-size:.75rem;
+  font-family:var(--mono);
+  transition:.18s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.adm-refresh-btn:hover{
+  background:#1a1f2b;
+  color:white;
+  border-color:var(--line3);
+}
+
+/* ── STATS ── */
 
 .adm-stats{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:16px;
-  margin-bottom:28px;
+  margin-bottom:32px;
 }
 
 .adm-stat{
   background:var(--ink3);
   border:1px solid var(--line);
-  border-radius:16px;
-  padding:22px;
+  border-radius:18px;
+  padding:24px 22px;
+  position:relative;
+  overflow:hidden;
+  transition:.2s;
 }
 
-.adm-stat-label{
-  font-size:.6rem;
-  font-family:var(--mono);
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--text20);
-  margin-bottom:12px;
-}
-
-.adm-stat-value{
-  font-size:2rem;
-  font-family:var(--mono);
-  margin-bottom:6px;
-}
-
-.adm-stat-sub{
-  font-size:.75rem;
-  color:var(--text40);
+.adm-stat::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  opacity:.5;
 }
 
 .amber .adm-stat-value{ color:var(--amber2); }
-.teal .adm-stat-value{ color:var(--teal); }
-.coral .adm-stat-value{ color:var(--coral); }
-.sky .adm-stat-value{ color:var(--sky); }
+.amber.adm-stat::after{ background:var(--amber2); }
 
-/* TOOLBAR */
+.teal .adm-stat-value{ color:var(--teal); }
+.teal.adm-stat::after{ background:var(--teal); }
+
+.coral .adm-stat-value{ color:var(--coral); }
+.coral.adm-stat::after{ background:var(--coral); }
+
+.sky .adm-stat-value{ color:var(--sky); }
+.sky.adm-stat::after{ background:var(--sky); }
+
+.adm-stat-icon{
+  font-size:1.2rem;
+  margin-bottom:14px;
+  opacity:.7;
+}
+
+.adm-stat-label{
+  font-size:.56rem;
+  font-family:var(--mono);
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--text20);
+  margin-bottom:10px;
+}
+
+.adm-stat-value{
+  font-size:2.1rem;
+  font-family:var(--mono);
+  font-weight:500;
+  margin-bottom:6px;
+  line-height:1;
+}
+
+.adm-stat-sub{
+  font-size:.72rem;
+  color:var(--text40);
+}
+
+/* ── TOOLBAR ── */
 
 .adm-toolbar{
   display:flex;
   flex-wrap:wrap;
   gap:12px;
-  margin-bottom:22px;
+  margin-bottom:20px;
+  align-items:center;
 }
 
 .adm-search-wrap{
   flex:1;
-  min-width:220px;
+  min-width:240px;
   position:relative;
 }
 
@@ -214,6 +294,8 @@ body{
   left:14px;
   top:50%;
   transform:translateY(-50%);
+  font-size:.9rem;
+  opacity:.5;
 }
 
 .adm-search{
@@ -223,26 +305,46 @@ body{
   border:1px solid var(--line2);
   background:var(--ink3);
   color:var(--text);
-  padding:0 14px 0 40px;
+  padding:0 14px 0 42px;
   outline:none;
+  font-family:var(--body);
+  font-size:.82rem;
+  transition:.18s;
+}
+
+.adm-search:focus{
+  border-color:rgba(212,168,67,.35);
+  background:#14171f;
+}
+
+.adm-search::placeholder{
+  color:var(--text20);
 }
 
 .adm-filter-group{
   display:flex;
   flex-wrap:wrap;
-  gap:8px;
+  gap:6px;
 }
 
-.adm-filter-btn,
-.adm-refresh-btn{
+.adm-filter-btn{
   border:none;
   cursor:pointer;
   background:var(--ink3);
   border:1px solid var(--line2);
-  color:var(--text70);
+  color:var(--text40);
   padding:10px 14px;
   border-radius:10px;
-  font-size:.75rem;
+  font-size:.72rem;
+  font-family:var(--mono);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  transition:.18s;
+}
+
+.adm-filter-btn:hover{
+  color:var(--text70);
+  border-color:var(--line3);
 }
 
 .adm-filter-btn.active{
@@ -251,7 +353,7 @@ body{
   color:var(--amber2);
 }
 
-/* TABLE */
+/* ── TABLE ── */
 
 .adm-table-wrap{
   width:100%;
@@ -265,25 +367,25 @@ body{
 .adm-row{
   display:grid;
   grid-template-columns:
-    140px
+    148px
     200px
     200px
-    160px
-    120px
-    110px
-    130px;
-  min-width:1060px;
+    165px
+    128px
+    118px
+    136px;
+  min-width:1095px;
 }
 
 .adm-table-head{
-  border-bottom:1px solid var(--line);
-  background:rgba(255,255,255,.02);
+  border-bottom:1px solid var(--line2);
+  background:rgba(255,255,255,.025);
 }
 
 .adm-th{
-  padding:16px;
-  font-size:.58rem;
-  letter-spacing:2px;
+  padding:14px 16px;
+  font-size:.54rem;
+  letter-spacing:2.5px;
   text-transform:uppercase;
   color:var(--text20);
   font-family:var(--mono);
@@ -292,86 +394,110 @@ body{
 .adm-row{
   border-bottom:1px solid var(--line);
   cursor:pointer;
-  transition:.2s;
+  transition:.15s;
+}
+
+.adm-row:last-child{
+  border-bottom:none;
 }
 
 .adm-row:hover{
-  background:rgba(255,255,255,.03);
+  background:rgba(255,255,255,.028);
 }
 
 .adm-cell{
   padding:16px;
   font-size:.82rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
 
 .adm-cell-id{
   color:var(--amber2);
   font-family:var(--mono);
+  font-size:.75rem;
 }
 
 .adm-cell-name{
   font-weight:700;
+  color:var(--text);
 }
 
 .adm-cell-sub{
-  margin-top:4px;
+  margin-top:3px;
   color:var(--text40);
   font-size:.72rem;
 }
 
 .adm-cell-route{
   display:flex;
+  flex-direction:row;
   align-items:center;
-  gap:8px;
+  gap:6px;
+  font-size:.78rem;
+  flex-wrap:wrap;
+}
+
+.adm-cell-route-arrow{
+  color:var(--text20);
+  font-size:.65rem;
 }
 
 .adm-cell-amount{
   color:var(--teal);
   font-family:var(--mono);
+  font-size:.82rem;
 }
 
-/* BADGES */
+/* ── BADGES ── */
 
 .adm-badge{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  padding:6px 10px;
+  padding:5px 10px;
   border-radius:999px;
-  font-size:.6rem;
+  font-size:.58rem;
   font-family:var(--mono);
   text-transform:uppercase;
   letter-spacing:1px;
+  width:fit-content;
 }
 
 .adm-badge-dot{
-  width:6px;
-  height:6px;
+  width:5px;
+  height:5px;
   border-radius:50%;
   background:currentColor;
+  flex-shrink:0;
 }
 
 .adm-badge.pending{
   color:var(--amber2);
-  background:rgba(212,168,67,.08);
+  background:rgba(212,168,67,.1);
+  border:1px solid rgba(212,168,67,.18);
 }
 
 .adm-badge.transit{
   color:var(--sky);
-  background:rgba(91,164,230,.08);
+  background:rgba(91,164,230,.1);
+  border:1px solid rgba(91,164,230,.18);
 }
 
 .adm-badge.delivered{
   color:var(--teal);
-  background:rgba(61,179,138,.08);
+  background:rgba(61,179,138,.1);
+  border:1px solid rgba(61,179,138,.18);
 }
 
 .adm-badge.cancelled{
   color:var(--coral);
-  background:rgba(224,96,96,.08);
+  background:rgba(224,96,96,.1);
+  border:1px solid rgba(224,96,96,.18);
 }
 
-/* EMPTY */
+/* ── EMPTY ── */
 
 .adm-empty{
   padding:80px 20px;
@@ -379,13 +505,15 @@ body{
 }
 
 .adm-empty-icon{
-  font-size:3rem;
-  margin-bottom:12px;
+  font-size:2.8rem;
+  margin-bottom:14px;
+  opacity:.6;
 }
 
 .adm-empty-title{
-  font-size:1.3rem;
-  margin-bottom:6px;
+  font-size:1.2rem;
+  font-family:var(--display);
+  margin-bottom:8px;
 }
 
 .adm-empty-sub{
@@ -393,78 +521,118 @@ body{
   font-size:.82rem;
 }
 
-/* DRAWER */
+/* ── RESULT COUNT ── */
+
+.adm-result-count{
+  font-size:.7rem;
+  color:var(--text40);
+  font-family:var(--mono);
+  padding:0 4px 14px;
+}
+
+.adm-result-count span{
+  color:var(--amber2);
+}
+
+/* ── DRAWER ── */
 
 .adm-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.6);
+  background:rgba(0,0,0,.65);
   z-index:100;
+  backdrop-filter:blur(2px);
 }
 
 .adm-drawer{
   position:fixed;
   top:0;
   right:0;
-  width:480px;
+  width:500px;
   max-width:100%;
   height:100vh;
   overflow-y:auto;
   background:var(--panel);
   z-index:101;
-  border-left:1px solid var(--line);
+  border-left:1px solid var(--line2);
+  display:flex;
+  flex-direction:column;
 }
 
 .adm-drawer-header{
-  padding:24px;
+  padding:26px 24px;
   border-bottom:1px solid var(--line);
   display:flex;
   justify-content:space-between;
+  align-items:flex-start;
   gap:12px;
+  background:rgba(255,255,255,.015);
 }
 
 .adm-drawer-id{
   font-family:var(--mono);
   color:var(--amber2);
-  margin-bottom:6px;
+  margin-bottom:5px;
+  font-size:.82rem;
 }
 
 .adm-drawer-time{
-  font-size:.75rem;
+  font-size:.72rem;
   color:var(--text40);
+  margin-bottom:12px;
 }
 
 .adm-drawer-close{
-  width:36px;
-  height:36px;
+  width:34px;
+  height:34px;
   border:none;
   cursor:pointer;
-  border-radius:10px;
+  border-radius:9px;
   background:var(--ink3);
   color:var(--text70);
+  border:1px solid var(--line2);
+  font-size:.9rem;
+  flex-shrink:0;
+  transition:.15s;
+}
+
+.adm-drawer-close:hover{
+  background:#1a1f2b;
+  color:white;
 }
 
 .adm-drawer-body{
   padding:24px;
+  flex:1;
 }
 
 .adm-drawer-section{
-  margin-bottom:28px;
+  margin-bottom:26px;
 }
 
 .adm-drawer-section-title{
-  font-size:.6rem;
+  font-size:.56rem;
   font-family:var(--mono);
   color:var(--amber);
-  margin-bottom:12px;
+  margin-bottom:14px;
   text-transform:uppercase;
-  letter-spacing:2px;
+  letter-spacing:3px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.adm-drawer-section-title::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--line);
 }
 
 .adm-drawer-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px;
+  gap:10px;
 }
 
 .adm-drawer-field{
@@ -472,6 +640,7 @@ body{
   border:1px solid var(--line);
   border-radius:12px;
   padding:14px;
+  transition:.15s;
 }
 
 .adm-drawer-field.full{
@@ -479,10 +648,12 @@ body{
 }
 
 .adm-drawer-field-label{
-  font-size:.6rem;
+  font-size:.56rem;
   color:var(--text20);
   text-transform:uppercase;
-  margin-bottom:5px;
+  letter-spacing:1.5px;
+  font-family:var(--mono);
+  margin-bottom:6px;
 }
 
 .adm-drawer-field-value{
@@ -498,55 +669,80 @@ body{
 .adm-drawer-field-value.teal{
   color:var(--teal);
   font-family:var(--mono);
+  font-size:.95rem;
+  font-weight:600;
 }
 
 .adm-drawer-footer{
-  padding:24px;
+  padding:22px 24px;
   border-top:1px solid var(--line);
 }
 
 .adm-drawer-footer-label{
-  font-size:.72rem;
+  font-size:.62rem;
   color:var(--text40);
-  margin-bottom:8px;
+  font-family:var(--mono);
+  text-transform:uppercase;
+  letter-spacing:2px;
+  margin-bottom:12px;
 }
 
 .adm-status-row{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
-  margin-top:10px;
 }
 
 .adm-status-opt{
   border:none;
   cursor:pointer;
-  padding:10px 14px;
+  padding:10px 16px;
   border-radius:10px;
-  background:var(--ink3);
+  background:var(--ink);
   color:var(--text70);
   border:1px solid var(--line2);
   font-size:.72rem;
+  font-family:var(--mono);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  transition:.18s;
+}
+
+.adm-status-opt:hover{
+  border-color:var(--line3);
+  color:white;
 }
 
 .adm-status-opt.active{
   border-color:var(--amber2);
+  color:var(--amber2);
+  background:rgba(212,168,67,.08);
 }
 
-/* TOAST */
+/* ── TOAST ── */
 
 .adm-toast{
   position:fixed;
-  right:20px;
-  bottom:20px;
+  right:24px;
+  bottom:24px;
   background:var(--ink2);
-  border:1px solid var(--line2);
-  padding:14px 18px;
+  border:1px solid var(--line3);
+  padding:14px 20px;
   border-radius:12px;
-  z-index:120;
+  z-index:200;
+  font-size:.82rem;
+  color:var(--teal);
+  font-family:var(--mono);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  animation:toastIn .2s ease;
 }
 
-/* MOBILE */
+@keyframes toastIn{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+/* ── MOBILE ── */
 
 @media(max-width:980px){
   .adm-stats{
@@ -556,34 +752,24 @@ body{
 
 @media(max-width:700px){
   .adm-nav{
-    padding:0 14px;
-    height:auto;
-    min-height:64px;
-    flex-wrap:wrap;
-    gap:10px;
-    padding-top:12px;
-    padding-bottom:12px;
-  }
-  .adm-nav-right{
-    width:100%;
-  }
-  .adm-nav-btn{
-    flex:1;
+    padding:0 16px;
+    height:56px;
   }
   .adm-main{
-    padding:18px;
+    padding:20px 16px;
   }
   .adm-stats{
-    grid-template-columns:1fr;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
   }
   .adm-toolbar{
     flex-direction:column;
     align-items:stretch;
   }
   .adm-filter-group{
-    width:100%;
-    overflow:auto;
+    overflow-x:auto;
     padding-bottom:4px;
+    flex-wrap:nowrap;
   }
   .adm-filter-btn{
     white-space:nowrap;
@@ -596,6 +782,10 @@ body{
   }
   .adm-drawer-field.full{
     grid-column:auto;
+  }
+  .adm-header{
+    flex-direction:column;
+    align-items:flex-start;
   }
 }
 `;
@@ -656,9 +846,7 @@ function DetailDrawer({ booking, onClose, onStatusChange }) {
           <div>
             <div className="adm-drawer-id">{id}</div>
             <div className="adm-drawer-time">{fmt(createdAt)}</div>
-            <div style={{ marginTop: 10 }}>
-              <StatusBadge status={status} />
-            </div>
+            <StatusBadge status={status} />
           </div>
           <button className="adm-drawer-close" onClick={onClose}>✕</button>
         </div>
@@ -710,12 +898,12 @@ function DetailDrawer({ booking, onClose, onStatusChange }) {
         </div>
 
         <div className="adm-drawer-footer">
-          <div className="adm-drawer-footer-label">Update shipment status</div>
+          <div className="adm-drawer-footer-label">Update Status</div>
           <div className="adm-status-row">
             {["pending", "transit", "delivered", "cancelled"].map((s) => (
               <button
                 key={s}
-                className={`adm-status-opt ${s}${status === s ? " active" : ""}`}
+                className={`adm-status-opt${status === s ? " active" : ""}`}
                 onClick={() => onStatusChange(id, s)}
               >
                 {s === "transit" ? "In Transit" : s.charAt(0).toUpperCase() + s.slice(1)}
@@ -748,7 +936,7 @@ export default function AdminPage({ setPage }) {
     if (spin) setSpinning(true);
     setBookings(loadAllBookings());
     setLoading(false);
-    if (spin) setTimeout(() => setSpinning(false), 500);
+    if (spin) setTimeout(() => setSpinning(false), 600);
   }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
@@ -780,37 +968,53 @@ export default function AdminPage({ setPage }) {
   const inTransit = bookings.filter((b) => b.status === "transit").length;
   const delivered = bookings.filter((b) => b.status === "delivered").length;
 
+  // Live date string
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("en-KE", { weekday: "short", day: "numeric", month: "long", year: "numeric" });
+
   return (
     <div className="adm-root">
       <style>{CSS}</style>
 
+      {/* NAV — brand only, no action buttons */}
       <nav className="adm-nav">
         <div className="adm-nav-brand">
-          <div className="adm-nav-brand-dot" />
-          SpeedPak
-          <span className="adm-nav-badge">Admin</span>
+          <div className="adm-nav-logo">
+            <div className="adm-nav-brand-dot" />
+            <span className="adm-nav-wordmark">SpeedPak</span>
+          </div>
+          <div className="adm-nav-divider" />
+          <span className="adm-nav-badge">Admin Console</span>
         </div>
-        <div className="adm-nav-right">
-          <button className="adm-nav-btn" onClick={() => setPage?.("home")}>← Home</button>
-          <button className="adm-nav-btn" onClick={() => setPage?.("book")}>+ New Booking</button>
-        </div>
+        <div className="adm-nav-meta">{dateStr}</div>
       </nav>
 
       <div className="adm-main">
+        {/* HEADER */}
         <div className="adm-header">
-          <div className="adm-eyebrow">Control Panel</div>
-          <h1 className="adm-title">Shipment <em>Dashboard</em></h1>
-          <p className="adm-subtitle">All bookings submitted through the SpeedPak form.</p>
+          <div className="adm-header-left">
+            <div className="adm-eyebrow">Control Panel</div>
+            <h1 className="adm-title">Shipment <em>Dashboard</em></h1>
+            <p className="adm-subtitle">All bookings submitted through the SpeedPak platform.</p>
+          </div>
+          <div className="adm-header-right">
+            <button className="adm-refresh-btn" onClick={() => refresh(true)}>
+              <span>{spinning ? "↻" : "↻"}</span>
+              {spinning ? "Refreshing…" : "Refresh"}
+            </button>
+          </div>
         </div>
 
+        {/* STATS */}
         <div className="adm-stats">
           {[
-            { label: "Total Bookings", value: bookings.length, sub: "All time", cls: "amber" },
-            { label: "Revenue (KSh)", value: `${(totalRevenue / 1000).toFixed(1)}K`, sub: "Estimated total", cls: "teal" },
-            { label: "Pending", value: pending, sub: "Awaiting pickup", cls: "coral" },
-            { label: "In Transit", value: inTransit, sub: `${delivered} delivered`, cls: "sky" },
+            { label: "Total Bookings", value: bookings.length, sub: "All time", cls: "amber", icon: "📦" },
+            { label: "Revenue (KSh)", value: `${(totalRevenue / 1000).toFixed(1)}K`, sub: "Estimated total", cls: "teal", icon: "💰" },
+            { label: "Pending", value: pending, sub: "Awaiting pickup", cls: "coral", icon: "⏳" },
+            { label: "In Transit", value: inTransit, sub: `${delivered} delivered`, cls: "sky", icon: "🚚" },
           ].map((s) => (
             <div key={s.label} className={`adm-stat ${s.cls}`}>
+              <div className="adm-stat-icon">{s.icon}</div>
               <div className="adm-stat-label">{s.label}</div>
               <div className="adm-stat-value">{loading ? "…" : s.value}</div>
               <div className="adm-stat-sub">{s.sub}</div>
@@ -818,12 +1022,13 @@ export default function AdminPage({ setPage }) {
           ))}
         </div>
 
+        {/* TOOLBAR */}
         <div className="adm-toolbar">
           <div className="adm-search-wrap">
             <span className="adm-search-icon">🔍</span>
             <input
               className="adm-search"
-              placeholder="Search by ID, sender, county..."
+              placeholder="Search by ID, name, county, phone…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -835,15 +1040,20 @@ export default function AdminPage({ setPage }) {
                 className={`adm-filter-btn${filter === f ? " active" : ""}`}
                 onClick={() => setFilter(f)}
               >
-                {f === "transit" ? "Transit" : f.charAt(0).toUpperCase() + f.slice(1)}
+                {f === "all" ? "All" : f === "transit" ? "Transit" : f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
             ))}
           </div>
-          <button className="adm-refresh-btn" onClick={() => refresh(true)}>
-            {spinning ? "↻ Refreshing..." : "↻ Refresh"}
-          </button>
         </div>
 
+        {/* RESULT COUNT */}
+        {!loading && (
+          <div className="adm-result-count">
+            Showing <span>{filtered.length}</span> of {bookings.length} bookings
+          </div>
+        )}
+
+        {/* TABLE */}
         <div className="adm-table-wrap">
           <div className="adm-table-head">
             <div className="adm-th">Tracking ID</div>
@@ -858,13 +1068,13 @@ export default function AdminPage({ setPage }) {
             {loading ? (
               <div className="adm-empty">
                 <div className="adm-empty-icon">⏳</div>
-                <div className="adm-empty-title">Loading bookings...</div>
+                <div className="adm-empty-title">Loading bookings…</div>
               </div>
             ) : filtered.length === 0 ? (
               <div className="adm-empty">
                 <div className="adm-empty-icon">📭</div>
                 <div className="adm-empty-title">No bookings found</div>
-                <div className="adm-empty-sub">Try adjusting your filters or search.</div>
+                <div className="adm-empty-sub">Try adjusting your filters or search query.</div>
               </div>
             ) : (
               filtered.map((b) => {
@@ -882,10 +1092,12 @@ export default function AdminPage({ setPage }) {
                       <div className="adm-cell-sub">{b.form?.recipientPhone || ""}</div>
                       <div className="adm-cell-sub" style={{ color: "var(--teal)" }}>{b.form?.recipientCounty || ""}</div>
                     </div>
-                    <div className="adm-cell adm-cell-route">
-                      <strong>{b.form?.senderCounty || "—"}</strong>
-                      <span>→</span>
-                      <strong>{b.form?.recipientCounty || "—"}</strong>
+                    <div className="adm-cell">
+                      <div className="adm-cell-route">
+                        <strong style={{ color: "var(--amber2)" }}>{b.form?.senderCounty || "—"}</strong>
+                        <span className="adm-cell-route-arrow">→</span>
+                        <strong style={{ color: "var(--teal)" }}>{b.form?.recipientCounty || "—"}</strong>
+                      </div>
                     </div>
                     <div className="adm-cell">
                       <div className="adm-cell-name">{svc.label}</div>
