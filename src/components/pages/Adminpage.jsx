@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { loadAllBookings } from "./Storage";
 
 // ── CSS ───────────────────────────────────────────────────────────────────────
 const CSS = `
@@ -504,6 +505,12 @@ body{
   border-top:1px solid var(--line);
 }
 
+.adm-drawer-footer-label{
+  font-size:.72rem;
+  color:var(--text40);
+  margin-bottom:8px;
+}
+
 .adm-status-row{
   display:flex;
   flex-wrap:wrap;
@@ -548,7 +555,6 @@ body{
 }
 
 @media(max-width:700px){
-
   .adm-nav{
     padding:0 14px;
     height:auto;
@@ -558,46 +564,36 @@ body{
     padding-top:12px;
     padding-bottom:12px;
   }
-
   .adm-nav-right{
     width:100%;
   }
-
   .adm-nav-btn{
     flex:1;
   }
-
   .adm-main{
     padding:18px;
   }
-
   .adm-stats{
     grid-template-columns:1fr;
   }
-
   .adm-toolbar{
     flex-direction:column;
     align-items:stretch;
   }
-
   .adm-filter-group{
     width:100%;
     overflow:auto;
     padding-bottom:4px;
   }
-
   .adm-filter-btn{
     white-space:nowrap;
   }
-
   .adm-drawer{
     width:100%;
   }
-
   .adm-drawer-grid{
     grid-template-columns:1fr;
   }
-
   .adm-drawer-field.full{
     grid-column:auto;
   }
@@ -607,47 +603,28 @@ body{
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 
 const SVC_MAP = {
-  express: {
-    label: "Express",
-    eta: "Same day",
-  },
-  standard: {
-    label: "Standard",
-    eta: "1–2 days",
-  },
-  economy: {
-    label: "Economy",
-    eta: "3–5 days",
-  },
+  express: { label: "Express", eta: "Same day" },
+  standard: { label: "Standard", eta: "1–2 days" },
+  economy: { label: "Economy", eta: "3–5 days" },
 };
 
-function fmt(ts){
-  if(!ts) return "—";
-
+function fmt(ts) {
+  if (!ts) return "—";
   const d = new Date(ts);
-
   return (
-    d.toLocaleDateString("en-KE", {
-      day:"numeric",
-      month:"short",
-      year:"numeric",
-    }) +
+    d.toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" }) +
     " · " +
-    d.toLocaleTimeString("en-KE", {
-      hour:"2-digit",
-      minute:"2-digit",
-    })
+    d.toLocaleTimeString("en-KE", { hour: "2-digit", minute: "2-digit" })
   );
 }
 
-function StatusBadge({ status }){
+function StatusBadge({ status }) {
   const labels = {
-    pending:"Pending",
-    transit:"In Transit",
-    delivered:"Delivered",
-    cancelled:"Cancelled",
+    pending: "Pending",
+    transit: "In Transit",
+    delivered: "Delivered",
+    cancelled: "Cancelled",
   };
-
   return (
     <span className={`adm-badge ${status}`}>
       <span className="adm-badge-dot" />
@@ -656,92 +633,16 @@ function StatusBadge({ status }){
   );
 }
 
-// ── STORAGE ───────────────────────────────────────────────────────────────────
-
-function loadAllBookings(){
-  try{
-    const results = [];
-
-    for(let i = 0; i < localStorage.length; i++){
-      const key = localStorage.key(i);
-
-      if(key && key.startsWith("booking:")){
-        const val = localStorage.getItem(key);
-
-        if(val){
-          results.push(JSON.parse(val));
-        }
-      }
-    }
-
-    return results.sort(
-      (a, b) => (b.createdAt || 0) - (a.createdAt || 0)
-    );
-  }catch(err){
-    console.error(err);
-    return [];
-  }
-}
-
-function updateBookingStatus(id, status){
-  try{
-    const key = `booking:${id}`;
-    const val = localStorage.getItem(key);
-
-    if(!val) return false;
-
-    const booking = JSON.parse(val);
-
-    booking.status = status;
-
-    localStorage.setItem(key, JSON.stringify(booking));
-
-    return true;
-  }catch(err){
-    console.error(err);
-    return false;
-  }
-}
-
 // ── DETAIL DRAWER ─────────────────────────────────────────────────────────────
 
-function DetailDrawer({
-  booking,
-  onClose,
-  onStatusChange,
-}){
-
-  const {
-    form,
-    fee,
-    weightCost,
-    total,
-    createdAt,
-    id,
-    status,
-  } = booking;
-
+function DetailDrawer({ booking, onClose, onStatusChange }) {
+  const { form, fee, weightCost, total, createdAt, id, status } = booking;
   const svc = SVC_MAP[form?.speed] || SVC_MAP.standard;
 
-  const Field = ({
-    label,
-    value,
-    mono,
-    teal,
-    full,
-  }) => (
+  const Field = ({ label, value, mono, teal, full }) => (
     <div className={`adm-drawer-field${full ? " full" : ""}`}>
-      <div className="adm-drawer-field-label">
-        {label}
-      </div>
-
-      <div
-        className={
-          `adm-drawer-field-value` +
-          `${mono ? " mono" : ""}` +
-          `${teal ? " teal" : ""}`
-        }
-      >
+      <div className="adm-drawer-field-label">{label}</div>
+      <div className={`adm-drawer-field-value${mono ? " mono" : ""}${teal ? " teal" : ""}`}>
         {value || "—"}
       </div>
     </div>
@@ -749,156 +650,75 @@ function DetailDrawer({
 
   return (
     <>
-      <div
-        className="adm-overlay"
-        onClick={onClose}
-      />
-
+      <div className="adm-overlay" onClick={onClose} />
       <div className="adm-drawer">
-
         <div className="adm-drawer-header">
           <div>
-            <div className="adm-drawer-id">
-              {id}
-            </div>
-
-            <div className="adm-drawer-time">
-              {fmt(createdAt)}
-            </div>
-
-            <div style={{ marginTop:10 }}>
+            <div className="adm-drawer-id">{id}</div>
+            <div className="adm-drawer-time">{fmt(createdAt)}</div>
+            <div style={{ marginTop: 10 }}>
               <StatusBadge status={status} />
             </div>
           </div>
-
-          <button
-            className="adm-drawer-close"
-            onClick={onClose}
-          >
-            ✕
-          </button>
+          <button className="adm-drawer-close" onClick={onClose}>✕</button>
         </div>
 
         <div className="adm-drawer-body">
-
-          {/* Sender */}
-
           <div className="adm-drawer-section">
-            <div className="adm-drawer-section-title">
-              Sender
-            </div>
-
+            <div className="adm-drawer-section-title">Sender</div>
             <div className="adm-drawer-grid">
               <Field label="Full Name" value={form?.senderName} />
               <Field label="Phone" value={form?.senderPhone} mono />
               <Field label="County" value={form?.senderCounty} />
-              <Field label="Email" value={form?.senderEmail || "—"} />
-              <Field label="Pickup Address" value={form?.senderAddress} full />
             </div>
           </div>
 
-          {/* Recipient */}
-
           <div className="adm-drawer-section">
-            <div className="adm-drawer-section-title">
-              Recipient
-            </div>
-
+            <div className="adm-drawer-section-title">Recipient</div>
             <div className="adm-drawer-grid">
               <Field label="Full Name" value={form?.recipientName} />
               <Field label="Phone" value={form?.recipientPhone} mono />
               <Field label="County" value={form?.recipientCounty} />
-              <Field label="Delivery Address" value={form?.recipientAddress} full />
             </div>
           </div>
 
-          {/* Parcel */}
-
           <div className="adm-drawer-section">
-            <div className="adm-drawer-section-title">
-              Parcel & Service
-            </div>
-
+            <div className="adm-drawer-section-title">Parcel & Service</div>
             <div className="adm-drawer-grid">
               <Field label="Weight" value={form?.weight ? `${form.weight} kg` : "—"} />
-              <Field label="Category" value={form?.parcelType} />
               <Field label="Service Tier" value={svc.label} />
               <Field label="ETA" value={svc.eta} />
               <Field label="Pickup Date" value={form?.date} />
               <Field label="Time Slot" value={form?.timeSlot} />
               <Field label="Insurance" value={form?.insurance ? "Yes — KSh 80" : "No"} />
-              <Field label="Description" value={form?.description || "—"} full />
             </div>
           </div>
 
-          {/* Payment */}
-
           <div className="adm-drawer-section">
-            <div className="adm-drawer-section-title">
-              Payment
-            </div>
-
+            <div className="adm-drawer-section-title">Payment</div>
             <div className="adm-drawer-grid">
               <Field
                 label="Method"
-                value={
-                  form?.payment
-                    ? form.payment.charAt(0).toUpperCase() +
-                      form.payment.slice(1)
-                    : "—"
-                }
+                value={form?.payment ? form.payment.charAt(0).toUpperCase() + form.payment.slice(1) : "—"}
               />
-
-              {form?.mpesaPhone && (
-                <Field
-                  label="M-Pesa Number"
-                  value={form.mpesaPhone}
-                  mono
-                />
-              )}
-
-              <Field
-                label="Base Fee"
-                value={`KSh ${(fee || 0).toLocaleString()}`}
-              />
-
-              <Field
-                label="Weight Cost"
-                value={`KSh ${(weightCost || 0).toLocaleString()}`}
-              />
-
-              <Field
-                label="Total Charged"
-                value={`KSh ${(total || 0).toLocaleString()}`}
-                teal
-              />
+              {form?.mpesaPhone && <Field label="M-Pesa Number" value={form.mpesaPhone} mono />}
+              <Field label="Base Fee" value={`KSh ${(fee || 0).toLocaleString()}`} />
+              <Field label="Weight Cost" value={`KSh ${(weightCost || 0).toLocaleString()}`} />
+              <Field label="Total Charged" value={`KSh ${(total || 0).toLocaleString()}`} teal />
             </div>
           </div>
         </div>
 
         <div className="adm-drawer-footer">
-          <div className="adm-drawer-footer-label">
-            Update shipment status
-          </div>
-
+          <div className="adm-drawer-footer-label">Update shipment status</div>
           <div className="adm-status-row">
-            {[
-              "pending",
-              "transit",
-              "delivered",
-              "cancelled",
-            ].map((s) => (
+            {["pending", "transit", "delivered", "cancelled"].map((s) => (
               <button
                 key={s}
-                className={
-                  `adm-status-opt ${s}` +
-                  `${status === s ? " active" : ""}`
-                }
+                className={`adm-status-opt ${s}${status === s ? " active" : ""}`}
                 onClick={() => onStatusChange(id, s)}
               >
-                {s === "transit"
-                  ? "In Transit"
-                  : s.charAt(0).toUpperCase() + s.slice(1)}
+                {s === "transit" ? "In Transit" : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
           </div>
@@ -910,8 +730,7 @@ function DetailDrawer({
 
 // ── MAIN PAGE ─────────────────────────────────────────────────────────────────
 
-export default function AdminPage({ setPage }){
-
+export default function AdminPage({ setPage }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [spinning, setSpinning] = useState(false);
@@ -922,74 +741,29 @@ export default function AdminPage({ setPage }){
 
   const showToast = (msg) => {
     setToast(msg);
-
-    setTimeout(() => {
-      setToast(null);
-    }, 2500);
+    setTimeout(() => setToast(null), 2500);
   };
 
   const refresh = useCallback((spin = false) => {
-
-    if(spin){
-      setSpinning(true);
-    }
-
-    const data = loadAllBookings();
-
-    setBookings(data);
+    if (spin) setSpinning(true);
+    setBookings(loadAllBookings());
     setLoading(false);
-
-    if(spin){
-      setTimeout(() => {
-        setSpinning(false);
-      }, 500);
-    }
-
+    if (spin) setTimeout(() => setSpinning(false), 500);
   }, []);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   const handleStatusChange = (id, status) => {
-
-    const ok = updateBookingStatus(id, status);
-
-    if(ok){
-
-      setBookings((prev) =>
-        prev.map((b) =>
-          b.id === id
-            ? { ...b, status }
-            : b
-        )
-      );
-
-      if(selected?.id === id){
-        setSelected((prev) => ({
-          ...prev,
-          status,
-        }));
-      }
-
-      showToast(
-        `✓ Status updated to ${
-          status === "transit"
-            ? "In Transit"
-            : status
-        }`
-      );
+    if (updateBookingStatus(id, status)) {
+      setBookings((prev) => prev.map((b) => b.id === id ? { ...b, status } : b));
+      if (selected?.id === id) setSelected((prev) => ({ ...prev, status }));
+      showToast(`✓ Status updated to ${status === "transit" ? "In Transit" : status}`);
     }
   };
 
   const filtered = bookings.filter((b) => {
-
-    const matchFilter =
-      filter === "all" ||
-      b.status === filter;
-
+    const matchFilter = filter === "all" || b.status === filter;
     const q = search.toLowerCase();
-
     const matchSearch =
       !q ||
       b.id?.toLowerCase().includes(q) ||
@@ -998,199 +772,80 @@ export default function AdminPage({ setPage }){
       b.form?.senderCounty?.toLowerCase().includes(q) ||
       b.form?.recipientCounty?.toLowerCase().includes(q) ||
       b.form?.senderPhone?.includes(q);
-
     return matchFilter && matchSearch;
   });
 
-  const totalRevenue = bookings.reduce(
-    (sum, b) => sum + (b.total || 0),
-    0
-  );
-
-  const pending = bookings.filter(
-    (b) => b.status === "pending"
-  ).length;
-
-  const inTransit = bookings.filter(
-    (b) => b.status === "transit"
-  ).length;
-
-  const delivered = bookings.filter(
-    (b) => b.status === "delivered"
-  ).length;
+  const totalRevenue = bookings.reduce((sum, b) => sum + (b.total || 0), 0);
+  const pending = bookings.filter((b) => b.status === "pending").length;
+  const inTransit = bookings.filter((b) => b.status === "transit").length;
+  const delivered = bookings.filter((b) => b.status === "delivered").length;
 
   return (
     <div className="adm-root">
-
       <style>{CSS}</style>
 
-      {/* NAV */}
-
       <nav className="adm-nav">
-
         <div className="adm-nav-brand">
           <div className="adm-nav-brand-dot" />
           SpeedPak
-          <span className="adm-nav-badge">
-            Admin
-          </span>
+          <span className="adm-nav-badge">Admin</span>
         </div>
-
         <div className="adm-nav-right">
-
-          <button
-            className="adm-nav-btn"
-            onClick={() => setPage?.("home")}
-          >
-            ← Home
-          </button>
-
-          <button
-            className="adm-nav-btn"
-            onClick={() => setPage?.("book")}
-          >
-            + New Booking
-          </button>
-
+          <button className="adm-nav-btn" onClick={() => setPage?.("home")}>← Home</button>
+          <button className="adm-nav-btn" onClick={() => setPage?.("book")}>+ New Booking</button>
         </div>
       </nav>
 
-      {/* MAIN */}
-
       <div className="adm-main">
-
         <div className="adm-header">
-
-          <div className="adm-eyebrow">
-            Control Panel
-          </div>
-
-          <h1 className="adm-title">
-            Shipment <em>Dashboard</em>
-          </h1>
-
-          <p className="adm-subtitle">
-            All bookings submitted through the SpeedPak form.
-          </p>
-
+          <div className="adm-eyebrow">Control Panel</div>
+          <h1 className="adm-title">Shipment <em>Dashboard</em></h1>
+          <p className="adm-subtitle">All bookings submitted through the SpeedPak form.</p>
         </div>
-
-        {/* STATS */}
 
         <div className="adm-stats">
-
           {[
-            {
-              label:"Total Bookings",
-              value:bookings.length,
-              sub:"All time",
-              cls:"amber",
-            },
-            {
-              label:"Revenue (KSh)",
-              value:`${(totalRevenue / 1000).toFixed(1)}K`,
-              sub:"Estimated total",
-              cls:"teal",
-            },
-            {
-              label:"Pending",
-              value:pending,
-              sub:"Awaiting pickup",
-              cls:"coral",
-            },
-            {
-              label:"In Transit",
-              value:inTransit,
-              sub:`${delivered} delivered`,
-              cls:"sky",
-            },
+            { label: "Total Bookings", value: bookings.length, sub: "All time", cls: "amber" },
+            { label: "Revenue (KSh)", value: `${(totalRevenue / 1000).toFixed(1)}K`, sub: "Estimated total", cls: "teal" },
+            { label: "Pending", value: pending, sub: "Awaiting pickup", cls: "coral" },
+            { label: "In Transit", value: inTransit, sub: `${delivered} delivered`, cls: "sky" },
           ].map((s) => (
-
-            <div
-              key={s.label}
-              className={`adm-stat ${s.cls}`}
-            >
-              <div className="adm-stat-label">
-                {s.label}
-              </div>
-
-              <div className="adm-stat-value">
-                {loading ? "…" : s.value}
-              </div>
-
-              <div className="adm-stat-sub">
-                {s.sub}
-              </div>
+            <div key={s.label} className={`adm-stat ${s.cls}`}>
+              <div className="adm-stat-label">{s.label}</div>
+              <div className="adm-stat-value">{loading ? "…" : s.value}</div>
+              <div className="adm-stat-sub">{s.sub}</div>
             </div>
-
           ))}
-
         </div>
 
-        {/* TOOLBAR */}
-
         <div className="adm-toolbar">
-
           <div className="adm-search-wrap">
-
-            <span className="adm-search-icon">
-              🔍
-            </span>
-
+            <span className="adm-search-icon">🔍</span>
             <input
               className="adm-search"
               placeholder="Search by ID, sender, county..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-
           </div>
-
           <div className="adm-filter-group">
-
-            {[
-              "all",
-              "pending",
-              "transit",
-              "delivered",
-              "cancelled",
-            ].map((f) => (
-
+            {["all", "pending", "transit", "delivered", "cancelled"].map((f) => (
               <button
                 key={f}
-                className={
-                  `adm-filter-btn${
-                    filter === f
-                      ? " active"
-                      : ""
-                  }`
-                }
+                className={`adm-filter-btn${filter === f ? " active" : ""}`}
                 onClick={() => setFilter(f)}
               >
-                {f === "transit"
-                  ? "Transit"
-                  : f.charAt(0).toUpperCase() + f.slice(1)}
+                {f === "transit" ? "Transit" : f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
-
             ))}
-
           </div>
-
-          <button
-            className="adm-refresh-btn"
-            onClick={() => refresh(true)}
-          >
+          <button className="adm-refresh-btn" onClick={() => refresh(true)}>
             {spinning ? "↻ Refreshing..." : "↻ Refresh"}
           </button>
-
         </div>
 
-        {/* TABLE */}
-
         <div className="adm-table-wrap">
-
           <div className="adm-table-head">
-
             <div className="adm-th">Tracking ID</div>
             <div className="adm-th">Sender</div>
             <div className="adm-th">Recipient</div>
@@ -1198,158 +853,55 @@ export default function AdminPage({ setPage }){
             <div className="adm-th">Service</div>
             <div className="adm-th">Amount</div>
             <div className="adm-th">Status</div>
-
           </div>
-
           <div className="adm-table-body">
-
             {loading ? (
-
               <div className="adm-empty">
                 <div className="adm-empty-icon">⏳</div>
-                <div className="adm-empty-title">
-                  Loading bookings...
-                </div>
+                <div className="adm-empty-title">Loading bookings...</div>
               </div>
-
             ) : filtered.length === 0 ? (
-
               <div className="adm-empty">
                 <div className="adm-empty-icon">📭</div>
-
-                <div className="adm-empty-title">
-                  No bookings found
-                </div>
-
-                <div className="adm-empty-sub">
-                  Try adjusting your filters or search.
-                </div>
+                <div className="adm-empty-title">No bookings found</div>
+                <div className="adm-empty-sub">Try adjusting your filters or search.</div>
               </div>
-
             ) : (
-
               filtered.map((b) => {
-
-                const svc =
-                  SVC_MAP[b.form?.speed] ||
-                  SVC_MAP.standard;
-
+                const svc = SVC_MAP[b.form?.speed] || SVC_MAP.standard;
                 return (
-
-                  <div
-                    key={b.id}
-                    className="adm-row"
-                    onClick={() => setSelected(b)}
-                  >
-
-                    <div className="adm-cell adm-cell-id">
-                      {b.id}
-                    </div>
-
-                    {/* Sender */}
-
+                  <div key={b.id} className="adm-row" onClick={() => setSelected(b)}>
+                    <div className="adm-cell adm-cell-id">{b.id}</div>
                     <div className="adm-cell">
-
-                      <div className="adm-cell-name">
-                        {b.form?.senderName || "—"}
-                      </div>
-
-                      <div className="adm-cell-sub">
-                        {b.form?.senderPhone || ""}
-                      </div>
-
-                      <div
-                        className="adm-cell-sub"
-                        style={{
-                          color:"var(--amber2)",
-                        }}
-                      >
-                        {b.form?.senderCounty || ""}
-                      </div>
-
+                      <div className="adm-cell-name">{b.form?.senderName || "—"}</div>
+                      <div className="adm-cell-sub">{b.form?.senderPhone || ""}</div>
+                      <div className="adm-cell-sub" style={{ color: "var(--amber2)" }}>{b.form?.senderCounty || ""}</div>
                     </div>
-
-                    {/* Recipient */}
-
                     <div className="adm-cell">
-
-                      <div className="adm-cell-name">
-                        {b.form?.recipientName || "—"}
-                      </div>
-
-                      <div className="adm-cell-sub">
-                        {b.form?.recipientPhone || ""}
-                      </div>
-
-                      <div
-                        className="adm-cell-sub"
-                        style={{
-                          color:"var(--teal)",
-                        }}
-                      >
-                        {b.form?.recipientCounty || ""}
-                      </div>
-
+                      <div className="adm-cell-name">{b.form?.recipientName || "—"}</div>
+                      <div className="adm-cell-sub">{b.form?.recipientPhone || ""}</div>
+                      <div className="adm-cell-sub" style={{ color: "var(--teal)" }}>{b.form?.recipientCounty || ""}</div>
                     </div>
-
-                    {/* Route */}
-
                     <div className="adm-cell adm-cell-route">
-
-                      <strong>
-                        {b.form?.senderCounty || "—"}
-                      </strong>
-
+                      <strong>{b.form?.senderCounty || "—"}</strong>
                       <span>→</span>
-
-                      <strong>
-                        {b.form?.recipientCounty || "—"}
-                      </strong>
-
+                      <strong>{b.form?.recipientCounty || "—"}</strong>
                     </div>
-
-                    {/* Service */}
-
                     <div className="adm-cell">
-
-                      <div className="adm-cell-name">
-                        {svc.label}
-                      </div>
-
-                      <div className="adm-cell-sub">
-                        {svc.eta}
-                      </div>
-
+                      <div className="adm-cell-name">{svc.label}</div>
+                      <div className="adm-cell-sub">{svc.eta}</div>
                     </div>
-
-                    {/* Amount */}
-
-                    <div className="adm-cell adm-cell-amount">
-                      KSh {(b.total || 0).toLocaleString()}
-                    </div>
-
-                    {/* Status */}
-
+                    <div className="adm-cell adm-cell-amount">KSh {(b.total || 0).toLocaleString()}</div>
                     <div className="adm-cell">
-                      <StatusBadge
-                        status={b.status || "pending"}
-                      />
+                      <StatusBadge status={b.status || "pending"} />
                     </div>
-
                   </div>
-
                 );
               })
-
             )}
-
           </div>
-
         </div>
-
       </div>
-
-      {/* DRAWER */}
 
       {selected && (
         <DetailDrawer
@@ -1359,14 +911,7 @@ export default function AdminPage({ setPage }){
         />
       )}
 
-      {/* TOAST */}
-
-      {toast && (
-        <div className="adm-toast">
-          {toast}
-        </div>
-      )}
-
+      {toast && <div className="adm-toast">{toast}</div>}
     </div>
   );
 }

@@ -814,6 +814,13 @@ const FAQS = [
   { q: "What if the recipient is unavailable?", a: "The rider will attempt delivery twice. On the second failed attempt, the parcel is held at the nearest SpeedPak agent point for up to 5 days. The recipient is notified via SMS with collection instructions." },
 ];
 
+// Map nav keys to section IDs for scroll behaviour
+const SCROLL_SECTIONS = {
+  services: "section-services",
+  track:    "section-track",
+  pricing:  "section-pricing",
+};
+
 export default function LandingPage({ setPage }) {
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
@@ -835,7 +842,26 @@ export default function LandingPage({ setPage }) {
     }
   }, [menuOpen]);
 
-  const navTo = (pg) => { setMenuOpen(false); setPage?.(pg); };
+  // Scroll to an in-page section by ID
+  const scrollTo = (id) => {
+    setMenuOpen(false);
+    const el = document.getElementById(id);
+    if (el) {
+      // Offset by nav height (64px)
+      const top = el.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };
+
+  // Route to another page OR scroll to a section on this page
+  const handleNav = (pg) => {
+    setMenuOpen(false);
+    if (SCROLL_SECTIONS[pg]) {
+      scrollTo(SCROLL_SECTIONS[pg]);
+    } else {
+      setPage?.(pg);
+    }
+  };
 
   return (
     <div className="lp">
@@ -843,18 +869,18 @@ export default function LandingPage({ setPage }) {
 
       {/* ── NAV ── */}
       <nav className={`lp-nav${scrolled ? " solid" : ""}`}>
-        <div className="lp-nav-logo" onClick={() => navTo("home")}>
+        <div className="lp-nav-logo" onClick={() => handleNav("home")}>
           <div className="lp-nav-dot" />
           SpeedPak
         </div>
         <div className="lp-nav-links">
-          {[["home","Home"],["services","Services"],["track","Track"],["pricing","Pricing"],["about","About"]].map(([pg,lbl]) => (
-            <span key={pg} onClick={() => navTo(pg)}>{lbl}</span>
+          {[["home","Home"],["services","Services"],["track","Track"],["pricing","Pricing"],["about","About"],["admin","Admin"]].map(([pg,lbl]) => (
+            <span key={pg} onClick={() => handleNav(pg)}>{lbl}</span>
           ))}
         </div>
         <div className="lp-nav-right">
-          <button className="btn-ghost" onClick={() => navTo("track")}>Track Parcel</button>
-          <button className="btn-gold"  onClick={() => navTo("book")}>Send Now →</button>
+          <button className="btn-ghost" onClick={() => scrollTo("section-track")}>Track Parcel</button>
+          <button className="btn-gold"  onClick={() => handleNav("book")}>Send Now →</button>
         </div>
         {/* Hamburger */}
         <button
@@ -868,12 +894,12 @@ export default function LandingPage({ setPage }) {
 
       {/* Mobile drawer */}
       <div className={`lp-mobile-menu${menuOpen ? " open" : ""}`}>
-        {[["home","Home"],["services","Services"],["track","Track"],["pricing","Pricing"],["about","About"]].map(([pg,lbl]) => (
-          <div className="lp-mobile-menu-link" key={pg} onClick={() => navTo(pg)}>{lbl}</div>
+        {[["home","Home"],["services","Services"],["track","Track"],["pricing","Pricing"],["about","About"],["admin","Admin"]].map(([pg,lbl]) => (
+          <div className="lp-mobile-menu-link" key={pg} onClick={() => handleNav(pg)}>{lbl}</div>
         ))}
         <div className="lp-mobile-menu-actions">
-          <button className="btn-ghost" onClick={() => navTo("track")}>Track Parcel</button>
-          <button className="btn-gold"  onClick={() => navTo("book")}>Send Now →</button>
+          <button className="btn-ghost" onClick={() => scrollTo("section-track")}>Track Parcel</button>
+          <button className="btn-gold"  onClick={() => handleNav("book")}>Send Now →</button>
         </div>
       </div>
 
@@ -899,8 +925,8 @@ export default function LandingPage({ setPage }) {
             Real-time GPS tracking all the way to 47 counties — from Nairobi CBD to Mandera.
           </p>
           <div className="lp-hero-actions">
-            <button className="btn-gold-lg" onClick={() => navTo("book")}>Send a Parcel →</button>
-            <button className="btn-outline-lg" onClick={() => navTo("track")}>Track Existing</button>
+            <button className="btn-gold-lg" onClick={() => handleNav("book")}>Send a Parcel →</button>
+            <button className="btn-outline-lg" onClick={() => scrollTo("section-track")}>Track Existing</button>
           </div>
           <div className="lp-hero-trust">
             <div className="lp-hero-trust-faces">
@@ -1070,7 +1096,7 @@ export default function LandingPage({ setPage }) {
       </section>
 
       {/* ── SERVICES ── */}
-      <section className="lp-services">
+      <section className="lp-services" id="section-services">
         <div className="lp-inner">
           <div className="lp-services-header">
             <div className="lp-eyebrow" style={{marginBottom:14}}>What we offer</div>
@@ -1098,7 +1124,7 @@ export default function LandingPage({ setPage }) {
       </section>
 
       {/* ── QUICK TRACK ── */}
-      <div className="lp-track-belt">
+      <div className="lp-track-belt" id="section-track">
         <div className="lp-inner">
           <div className="lp-track-card">
             <div className="lp-track-card-glow" />
@@ -1113,10 +1139,10 @@ export default function LandingPage({ setPage }) {
                       value={trackVal}
                       onChange={e => setTrackVal(e.target.value)}
                       placeholder="e.g. SPK-009421"
-                      onKeyDown={e => e.key === "Enter" && navTo("track")}
+                      onKeyDown={e => e.key === "Enter" && handleNav("track")}
                     />
                   </div>
-                  <button className="btn-gold" style={{height:52,padding:"0 28px",fontSize:".9rem",borderRadius:11,flexShrink:0}} onClick={() => navTo("track")}>
+                  <button className="btn-gold" style={{height:52,padding:"0 28px",fontSize:".9rem",borderRadius:11,flexShrink:0}} onClick={() => handleNav("track")}>
                     Track →
                   </button>
                 </div>
@@ -1171,7 +1197,7 @@ export default function LandingPage({ setPage }) {
       </section>
 
       {/* ── PRICING ── */}
-      <section className="lp-pricing">
+      <section className="lp-pricing" id="section-pricing">
         <div className="lp-inner">
           <div className="lp-pricing-header">
             <div className="lp-eyebrow" style={{marginBottom:14}}>Transparent pricing</div>
@@ -1220,7 +1246,7 @@ export default function LandingPage({ setPage }) {
                     </div>
                   ))}
                 </div>
-                <button className={`lp-plan-btn ${p.btn}`} onClick={() => navTo("book")}>
+                <button className={`lp-plan-btn ${p.btn}`} onClick={() => handleNav("book")}>
                   {p.name === "Business" ? "Contact Sales →" : "Get started →"}
                 </button>
               </div>
@@ -1258,8 +1284,8 @@ export default function LandingPage({ setPage }) {
           <h2 className="lp-final-h2">Kenya delivered<br /><em>on time, every time.</em></h2>
           <p className="lp-final-sub">Join 18,000+ customers and businesses who trust SpeedPak to move their world. Book your first delivery in under 60 seconds.</p>
           <div className="lp-final-actions">
-            <button className="btn-gold-lg" onClick={() => navTo("book")}>Send a Parcel →</button>
-            <button className="btn-outline-lg" onClick={() => navTo("about")}>Our Story</button>
+            <button className="btn-gold-lg" onClick={() => handleNav("book")}>Send a Parcel →</button>
+            <button className="btn-outline-lg" onClick={() => handleNav("about")}>Our Story</button>
           </div>
           <div className="lp-final-note">No account needed · Free first-time booking support · Cancel anytime</div>
         </div>
@@ -1288,7 +1314,7 @@ export default function LandingPage({ setPage }) {
             <div key={col.title}>
               <div className="lp-footer-col-title">{col.title}</div>
               <div className="lp-footer-col-links">
-                {col.links.map(l => <div className="lp-footer-link" key={l} onClick={() => navTo(l.toLowerCase().replace(/ /g,"-"))}>{l}</div>)}
+                {col.links.map(l => <div className="lp-footer-link" key={l} onClick={() => handleNav(l.toLowerCase().replace(/ /g,"-"))}>{l}</div>)}
               </div>
             </div>
           ))}

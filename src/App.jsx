@@ -13,6 +13,7 @@ import ContactPage from "./components/pages/ContactPage";
 import AccountPage from "./components/pages/AccountPage";
 import AdminPage from "./components/pages/Adminpage";
 import AboutPage from "./components/pages/AboutPage";
+import ServicesPage from "./components/ServicePage";
 
 const PAGES = {
   track: TrackPage,
@@ -20,6 +21,7 @@ const PAGES = {
   contact: ContactPage,
   account: AccountPage,
   admin: AdminPage,
+  services: ServicesPage, // ✅ NOW USED
 };
 
 export default function App() {

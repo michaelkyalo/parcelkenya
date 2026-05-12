@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
+import { saveBooking } from "./Storage";
 
 /* ─────────────────────────────────────────────────────────────
-   SPEEDPAK BOOK PAGE — FULL MOBILE RESPONSIVE VERSION
+   SPEEDPAK BOOK PAGE
 ───────────────────────────────────────────────────────────── */
 
 const CSS = `
@@ -536,21 +537,22 @@ body{
 
 .bp-confirm-actions{
   margin-top:32px;
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
 }
 
 /* MOBILE */
 
 @media (max-width: 1000px){
-
   .bp-layout{
     grid-template-columns:1fr;
   }
-
   .bp-summary{
     position:relative;
     top:0;
   }
-
   .bp-services,
   .bp-slots,
   .bp-payments{
@@ -559,43 +561,34 @@ body{
 }
 
 @media (max-width: 768px){
-
   .bp-nav{
     padding:0 18px;
   }
-
   .bp-nav-center{
     display:none;
   }
-
   .bp-layout{
     padding:20px;
   }
-
   .bp-block,
   .bp-summary,
   .bp-confirm{
     padding:22px;
     border-radius:20px;
   }
-
   .bp-grid-2{
     grid-template-columns:1fr;
   }
-
   .bp-page-title{
     font-size:2.5rem;
   }
-
   .bp-form-footer{
     flex-direction:column;
   }
-
   .bp-btn-primary,
   .bp-btn-ghost{
     width:100%;
   }
-
   .bp-confirm-row{
     flex-direction:column;
     gap:8px;
@@ -635,12 +628,6 @@ const slots = [
 ];
 
 /* HELPERS */
-
-function saveBooking(data) {
-  const old = JSON.parse(localStorage.getItem("speedpak_bookings") || "[]");
-  old.unshift(data);
-  localStorage.setItem("speedpak_bookings", JSON.stringify(old));
-}
 
 function Field({ label, children }) {
   return (
@@ -683,74 +670,34 @@ function Step1({ form, u, onNext }) {
   return (
     <div className="bp-block">
       <Section num="A" title="Sender Information" />
-
       <div className="bp-grid-2">
         <Field label="Sender Name">
-          <input
-            className="bp-input"
-            value={form.senderName}
-            onChange={(e) => u("senderName", e.target.value)}
-          />
+          <input className="bp-input" value={form.senderName} onChange={(e) => u("senderName", e.target.value)} />
         </Field>
-
         <Field label="Phone Number">
-          <input
-            className="bp-input"
-            value={form.senderPhone}
-            onChange={(e) => u("senderPhone", e.target.value)}
-          />
+          <input className="bp-input" value={form.senderPhone} onChange={(e) => u("senderPhone", e.target.value)} />
         </Field>
       </div>
-
       <Field label="Sender County">
-        <input
-          className="bp-input"
-          value={form.senderCounty}
-          onChange={(e) => u("senderCounty", e.target.value)}
-        />
+        <input className="bp-input" value={form.senderCounty} onChange={(e) => u("senderCounty", e.target.value)} />
       </Field>
-
       <Section num="B" title="Recipient Information" />
-
       <div className="bp-grid-2">
         <Field label="Recipient Name">
-          <input
-            className="bp-input"
-            value={form.recipientName}
-            onChange={(e) => u("recipientName", e.target.value)}
-          />
+          <input className="bp-input" value={form.recipientName} onChange={(e) => u("recipientName", e.target.value)} />
         </Field>
-
         <Field label="Recipient Phone">
-          <input
-            className="bp-input"
-            value={form.recipientPhone}
-            onChange={(e) => u("recipientPhone", e.target.value)}
-          />
+          <input className="bp-input" value={form.recipientPhone} onChange={(e) => u("recipientPhone", e.target.value)} />
         </Field>
       </div>
-
       <Field label="Recipient County">
-        <input
-          className="bp-input"
-          value={form.recipientCounty}
-          onChange={(e) => u("recipientCounty", e.target.value)}
-        />
+        <input className="bp-input" value={form.recipientCounty} onChange={(e) => u("recipientCounty", e.target.value)} />
       </Field>
-
       <Field label="Parcel Weight (kg)">
-        <input
-          className="bp-input"
-          type="number"
-          value={form.weight}
-          onChange={(e) => u("weight", e.target.value)}
-        />
+        <input className="bp-input" type="number" value={form.weight} onChange={(e) => u("weight", e.target.value)} />
       </Field>
-
       <div className="bp-form-footer">
-        <button className="bp-btn-primary" onClick={onNext}>
-          Continue →
-        </button>
+        <button className="bp-btn-primary" onClick={onNext}>Continue →</button>
       </div>
     </div>
   );
@@ -762,36 +709,13 @@ function Step2({ form, u, onBack, onNext }) {
   return (
     <div className="bp-block">
       <Section num="A" title="Delivery Service" />
-
       <div className="bp-services">
         {[
-          {
-            val: "express",
-            tag: "Priority",
-            name: "Express",
-            eta: "Same day",
-            price: "KSh 700+",
-          },
-          {
-            val: "standard",
-            tag: "Popular",
-            name: "Standard",
-            eta: "1–2 business days",
-            price: "KSh 420+",
-          },
-          {
-            val: "economy",
-            tag: "Value",
-            name: "Economy",
-            eta: "3–5 business days",
-            price: "KSh 250+",
-          },
+          { val: "express", tag: "Priority", name: "Express", eta: "Same day", price: "KSh 700+" },
+          { val: "standard", tag: "Popular", name: "Standard", eta: "1–2 business days", price: "KSh 420+" },
+          { val: "economy", tag: "Value", name: "Economy", eta: "3–5 business days", price: "KSh 250+" },
         ].map((s) => (
-          <div
-            key={s.val}
-            className={`bp-svc ${form.speed === s.val ? "sel" : ""}`}
-            onClick={() => u("speed", s.val)}
-          >
+          <div key={s.val} className={`bp-svc ${form.speed === s.val ? "sel" : ""}`} onClick={() => u("speed", s.val)}>
             <div className="bp-svc-tag">{s.tag}</div>
             <div className="bp-svc-name">{s.name}</div>
             <div className="bp-svc-eta">{s.eta}</div>
@@ -799,63 +723,32 @@ function Step2({ form, u, onBack, onNext }) {
           </div>
         ))}
       </div>
-
       <Section num="B" title="Collection Window" />
-
       <Field label="Pickup Date">
-        <input
-          className="bp-input"
-          type="date"
-          value={form.date}
-          onChange={(e) => u("date", e.target.value)}
-        />
+        <input className="bp-input" type="date" value={form.date} onChange={(e) => u("date", e.target.value)} />
       </Field>
-
       <div className="bp-slots">
         {slots.map((s) => (
-          <div
-            key={s.label}
-            className={`bp-slot ${
-              form.timeSlot === s.label ? "sel" : ""
-            }`}
-            onClick={() => u("timeSlot", s.label)}
-          >
+          <div key={s.label} className={`bp-slot ${form.timeSlot === s.label ? "sel" : ""}`} onClick={() => u("timeSlot", s.label)}>
             <span className="bp-slot-icon">{s.icon}</span>
-
             <div>
               <div>{s.label}</div>
-              <div style={{ opacity: 0.5, fontSize: "0.75rem" }}>
-                {s.sub}
-              </div>
+              <div style={{ opacity: 0.5, fontSize: "0.75rem" }}>{s.sub}</div>
             </div>
           </div>
         ))}
       </div>
-
       <Section num="C" title="Add-ons" />
-
-      <div
-        className={`bp-toggle-row ${form.insurance ? "on" : ""}`}
-        onClick={() => u("insurance", !form.insurance)}
-      >
+      <div className={`bp-toggle-row ${form.insurance ? "on" : ""}`} onClick={() => u("insurance", !form.insurance)}>
         <div>
           <div className="bp-toggle-title">Parcel Insurance Cover</div>
-          <div className="bp-toggle-sub">
-            Up to KSh 50,000 protection
-          </div>
+          <div className="bp-toggle-sub">Up to KSh 50,000 protection</div>
         </div>
-
         <div className="bp-toggle-switch" />
       </div>
-
       <div className="bp-form-footer">
-        <button className="bp-btn-ghost" onClick={onBack}>
-          ← Back
-        </button>
-
-        <button className="bp-btn-primary" onClick={onNext}>
-          Continue →
-        </button>
+        <button className="bp-btn-ghost" onClick={onBack}>← Back</button>
+        <button className="bp-btn-primary" onClick={onNext}>Continue →</button>
       </div>
     </div>
   );
@@ -867,53 +760,31 @@ function Step3({ form, u, total, onBack, onNext }) {
   return (
     <div className="bp-block">
       <Section num="A" title="Payment Method" />
-
       <div className="bp-payments">
         {[
           { val: "mpesa", icon: "📱", name: "M-Pesa" },
           { val: "card", icon: "💳", name: "Card" },
           { val: "cash", icon: "💵", name: "Cash" },
         ].map((p) => (
-          <div
-            key={p.val}
-            className={`bp-pay ${
-              form.payment === p.val ? "sel" : ""
-            }`}
-            onClick={() => u("payment", p.val)}
-          >
+          <div key={p.val} className={`bp-pay ${form.payment === p.val ? "sel" : ""}`} onClick={() => u("payment", p.val)}>
             <div className="bp-pay-icon">{p.icon}</div>
             <div className="bp-pay-name">{p.name}</div>
           </div>
         ))}
       </div>
-
       {form.payment === "mpesa" && (
         <div className="bp-pay-detail">
           <Field label="M-Pesa Number">
-            <input
-              className="bp-input"
-              placeholder="+254700000000"
-              value={form.mpesaPhone}
-              onChange={(e) => u("mpesaPhone", e.target.value)}
-            />
+            <input className="bp-input" placeholder="+254700000000" value={form.mpesaPhone} onChange={(e) => u("mpesaPhone", e.target.value)} />
           </Field>
         </div>
       )}
-
       {form.payment === "cash" && (
-        <div className="bp-cash-alert">
-          Pay your rider KSh {total.toLocaleString()} on pickup.
-        </div>
+        <div className="bp-cash-alert">Pay your rider KSh {total.toLocaleString()} on pickup.</div>
       )}
-
       <div className="bp-form-footer">
-        <button className="bp-btn-ghost" onClick={onBack}>
-          ← Back
-        </button>
-
-        <button className="bp-btn-primary" onClick={onNext}>
-          Confirm Booking →
-        </button>
+        <button className="bp-btn-ghost" onClick={onBack}>← Back</button>
+        <button className="bp-btn-primary" onClick={onNext}>Confirm Booking →</button>
       </div>
     </div>
   );
@@ -921,50 +792,32 @@ function Step3({ form, u, total, onBack, onNext }) {
 
 /* STEP 4 */
 
-function Step4({ form, total, trackingId, onNew }) {
+function Step4({ form, total, trackingId, onNew, setPage }) {
   return (
     <div className="bp-confirm">
       <div className="bp-confirm-ring">✓</div>
-
-      <div className="bp-confirm-status">
-        BOOKING CONFIRMED
-      </div>
-
-      <div className="bp-confirm-title">
-        You're all set!
-      </div>
-
-      <div className="bp-confirm-sub">
-        Tracking reference number
-      </div>
-
+      <div className="bp-confirm-status">BOOKING CONFIRMED</div>
+      <div className="bp-confirm-title">You're all set!</div>
+      <div className="bp-confirm-sub">Tracking reference number</div>
       <div className="bp-tracking-id">{trackingId}</div>
-
       <div className="bp-confirm-table">
         <div className="bp-confirm-row">
           <span>Destination</span>
           <strong>{form.recipientCounty}</strong>
         </div>
-
         <div className="bp-confirm-row">
           <span>Service</span>
           <strong>{SVC_MAP[form.speed].label}</strong>
         </div>
-
         <div className="bp-confirm-row">
           <span>Total</span>
           <strong>KSh {total.toLocaleString()}</strong>
         </div>
       </div>
-
-      <p className="bp-confirm-note">
-        SMS confirmation has been sent successfully.
-      </p>
-
+      <p className="bp-confirm-note">SMS confirmation has been sent successfully.</p>
       <div className="bp-confirm-actions">
-        <button className="bp-btn-primary" onClick={onNew}>
-          Book Another Parcel
-        </button>
+        <button className="bp-btn-primary" onClick={onNew}>Book Another Parcel</button>
+        <button className="bp-btn-ghost" onClick={() => setPage("admin")}>View in Admin →</button>
       </div>
     </div>
   );
@@ -975,24 +828,10 @@ function Step4({ form, total, trackingId, onNew }) {
 function SummaryPanel({ fee, weightCost, total }) {
   return (
     <div className="bp-summary">
-      <div className="bp-summary-title">
-        Shipment Summary
-      </div>
-
-      <div className="bp-summary-row">
-        <span>Delivery Fee</span>
-        <span>KSh {fee}</span>
-      </div>
-
-      <div className="bp-summary-row">
-        <span>Weight Charge</span>
-        <span>KSh {weightCost}</span>
-      </div>
-
-      <div className="bp-summary-total">
-        <span>Total</span>
-        <span>KSh {total}</span>
-      </div>
+      <div className="bp-summary-title">Shipment Summary</div>
+      <div className="bp-summary-row"><span>Delivery Fee</span><span>KSh {fee}</span></div>
+      <div className="bp-summary-row"><span>Weight Charge</span><span>KSh {weightCost}</span></div>
+      <div className="bp-summary-total"><span>Total</span><span>KSh {total}</span></div>
     </div>
   );
 }
@@ -1001,137 +840,60 @@ function SummaryPanel({ fee, weightCost, total }) {
 
 export default function BookPage({ setPage }) {
   const [step, setStep] = useState(1);
-
   const [form, setForm] = useState(INITIAL_FORM_STATE);
-
-  const trackingId = useRef(
-    "SPK-" + Math.floor(100000 + Math.random() * 900000)
-  );
-
-  const u = (k, v) =>
-    setForm((f) => ({
-      ...f,
-      [k]: v,
-    }));
-
+  const trackingId = useRef("SPK-" + Math.floor(100000 + Math.random() * 900000));
+  const u = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const fee = (SVC_MAP[form.speed] || SVC_MAP.standard).price;
-
-  const weightCost = Math.round(
-    parseFloat(form.weight || 0) * 60
-  );
-
-  const total =
-    fee + weightCost + (form.insurance ? 80 : 0);
+  const weightCost = Math.round(parseFloat(form.weight || 0) * 60);
+  const total = fee + weightCost + (form.insurance ? 80 : 0);
 
   const handleConfirm = () => {
+    // Save with booking:{id} key so AdminPage can read it
     saveBooking({
       id: trackingId.current,
       form,
+      fee,
+      weightCost,
       total,
+      status: "pending",
       createdAt: Date.now(),
     });
-
     setStep(4);
   };
 
   const handleNew = () => {
     setForm(INITIAL_FORM_STATE);
-
-    trackingId.current =
-      "SPK-" +
-      Math.floor(100000 + Math.random() * 900000);
-
+    trackingId.current = "SPK-" + Math.floor(100000 + Math.random() * 900000);
     setStep(1);
   };
 
   return (
     <div className="bp-root">
       <style>{CSS}</style>
-
       <nav className="bp-nav">
-        <div
-          className="bp-nav-brand"
-          onClick={() => setPage?.("home")}
-        >
+        <div className="bp-nav-brand" onClick={() => setPage?.("home")}>
           <div className="bp-nav-brand-dot" />
           SpeedPak
         </div>
-
-        <div className="bp-nav-center">
-          New Shipment
-        </div>
-
-        <button
-          className="bp-nav-btn"
-          onClick={() => setPage?.("home")}
-        >
-          ← Home
+        <div className="bp-nav-center">New Shipment</div>
+        <button className="bp-nav-btn" onClick={() => setPage?.("admin")}>
+          Admin Dashboard →
         </button>
       </nav>
-
       <div className="bp-layout">
         <div className="bp-form-area">
           <div className="bp-page-header">
-            <div className="bp-page-eyebrow">
-              New Shipment
-            </div>
-
-            <h1 className="bp-page-title">
-              Send a <em>Parcel</em>
-            </h1>
-
-            <p className="bp-page-desc">
-              Schedule parcel collection and delivery
-              across Kenya.
-            </p>
+            <div className="bp-page-eyebrow">New Shipment</div>
+            <h1 className="bp-page-title">Send a <em>Parcel</em></h1>
+            <p className="bp-page-desc">Schedule parcel collection and delivery across Kenya.</p>
           </div>
-
           {step < 4 && <ProgressRail step={step} />}
-
-          {step === 1 && (
-            <Step1
-              form={form}
-              u={u}
-              onNext={() => setStep(2)}
-            />
-          )}
-
-          {step === 2 && (
-            <Step2
-              form={form}
-              u={u}
-              onBack={() => setStep(1)}
-              onNext={() => setStep(3)}
-            />
-          )}
-
-          {step === 3 && (
-            <Step3
-              form={form}
-              u={u}
-              total={total}
-              onBack={() => setStep(2)}
-              onNext={handleConfirm}
-            />
-          )}
-
-          {step === 4 && (
-            <Step4
-              form={form}
-              total={total}
-              trackingId={trackingId.current}
-              onNew={handleNew}
-            />
-          )}
+          {step === 1 && <Step1 form={form} u={u} onNext={() => setStep(2)} />}
+          {step === 2 && <Step2 form={form} u={u} onBack={() => setStep(1)} onNext={() => setStep(3)} />}
+          {step === 3 && <Step3 form={form} u={u} total={total} onBack={() => setStep(2)} onNext={handleConfirm} />}
+          {step === 4 && <Step4 form={form} total={total} trackingId={trackingId.current} onNew={handleNew} setPage={setPage} />}
         </div>
-
-        {step < 4 && (
-          <SummaryPanel
-            fee={fee}
-            weightCost={weightCost}
-            total={total}
-          />
-        )}
+        {step < 4 && <SummaryPanel fee={fee} weightCost={weightCost} total={total} />}
       </div>
     </div>
   );
