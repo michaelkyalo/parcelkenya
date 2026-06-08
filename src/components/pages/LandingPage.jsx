@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 
-/* ─────────────────────────────────────────────
-   COUNTER HOOK — counts up on mount
-───────────────────────────────────────────── */
 function useCounter(target, duration = 2000, suffix = "") {
   const [val, setVal] = useState(0);
   const ref = useRef(null);
@@ -29,9 +26,6 @@ function Counter({ target, suffix, prefix }) {
   return <>{prefix}{display}{suffix}</>;
 }
 
-/* ─────────────────────────────────────────────
-   STYLES
-───────────────────────────────────────────── */
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -62,7 +56,6 @@ const CSS = `
 
   .lp { font-family: var(--sans); background: var(--bg); color: var(--w); overflow-x: hidden; }
 
-  /* ── SHARED ── */
   .lp-eyebrow {
     font-family: var(--mono); font-size: 0.67rem; letter-spacing: 2.5px;
     text-transform: uppercase; color: var(--gold);
@@ -129,7 +122,6 @@ const CSS = `
   .lp-nav-links span.active { color: var(--w); }
   .lp-nav-right { display: flex; gap: 10px; flex-shrink: 0; }
 
-  /* Mobile hamburger */
   .lp-nav-hamburger {
     display: none; flex-direction: column; gap: 5px; cursor: pointer;
     padding: 6px; margin-left: auto;
@@ -144,7 +136,6 @@ const CSS = `
   .lp-nav-hamburger.open span:nth-child(2) { opacity: 0; }
   .lp-nav-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
-  /* Mobile menu drawer */
   .lp-mobile-menu {
     display: none; position: fixed; top: 64px; left: 0; right: 0;
     background: rgba(8,10,15,.98); backdrop-filter: blur(28px);
@@ -262,7 +253,6 @@ const CSS = `
   .lp-hero-face:first-child { margin-left: 0; }
   .lp-hero-stars { color: var(--gold); font-size: .7rem; letter-spacing: 1px; }
 
-  /* right — floating cards stack */
   .lp-hero-visual {
     position: relative; z-index: 2; height: 520px;
     display: flex; align-items: center; justify-content: center;
@@ -461,39 +451,6 @@ const CSS = `
   .lp-srv-desc  { font-size:.82rem; color:var(--w40); line-height:1.72; margin-bottom:20px; }
   .lp-srv-tag   { display:inline-block; font-family:var(--mono); font-size:.66rem; letter-spacing:.5px; color:var(--gold); background:rgba(245,166,35,.08); border:1px solid rgba(245,166,35,.2); padding:4px 10px; border-radius:6px; }
 
-  /* ─────────── TRACK CTA ─────────── */
-  .lp-track-belt { padding:0 0 80px; background:var(--bg); }
-  .lp-track-card {
-    max-width:1200px; margin:0 auto;
-    background:linear-gradient(135deg,var(--surface),var(--sur2));
-    border:1px solid var(--bord2); border-radius:22px; padding:44px 48px;
-    position:relative; overflow:hidden;
-  }
-  .lp-track-card-glow {
-    position:absolute; width:420px; height:420px; border-radius:50%;
-    background:radial-gradient(circle,rgba(245,166,35,.09) 0%,transparent 65%);
-    right:-80px; top:-150px; pointer-events:none;
-  }
-  .lp-track-inner {
-    position:relative; z-index:1;
-    display:grid; grid-template-columns:1fr auto; gap:40px; align-items:center;
-  }
-  .lp-track-title { font-family:var(--disp); font-size:1.5rem; font-weight:800; letter-spacing:-.6px; color:var(--w); margin-bottom:5px; }
-  .lp-track-sub   { font-size:.85rem; color:var(--w40); }
-  .lp-track-row   { display:flex; gap:10px; align-items:center; margin-top:22px; flex-wrap: wrap; }
-  .lp-track-wrap  {
-    flex:1; min-width: 180px; display:flex; align-items:center; gap:12px;
-    background:var(--bg); border:1px solid var(--bord2);
-    border-radius:11px; padding:0 16px; height:52px;
-    transition:border-color .2s, box-shadow .2s;
-  }
-  .lp-track-wrap:focus-within { border-color:var(--gold); box-shadow:0 0 0 3px rgba(245,166,35,.1); }
-  .lp-track-wrap input {
-    flex:1; background:none; border:none; outline:none;
-    font-family:var(--mono); font-size:.88rem; color:var(--w);
-  }
-  .lp-track-wrap input::placeholder { color:var(--w20); }
-
   /* ─────────── TESTIMONIALS ─────────── */
   .lp-testimonials { padding:110px 0; background:var(--bg2); border-top:1px solid var(--border); }
   .lp-testi-header { margin-bottom:64px; }
@@ -517,51 +474,6 @@ const CSS = `
   .lp-testi-av.c { background:rgba(168,155,255,.12); border:1px solid rgba(168,155,255,.22); color:#A89BFF; }
   .lp-testi-name { font-size:.82rem; font-weight:600; color:var(--w); }
   .lp-testi-role { font-size:.73rem; color:var(--w40); }
-
-  /* ─────────── PRICING ─────────── */
-  .lp-pricing { padding:110px 0; background:var(--bg); border-top:1px solid var(--border); }
-  .lp-pricing-header { margin-bottom:64px; }
-  .lp-pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-  .lp-plan {
-    background:var(--bg2); border:1px solid var(--border); border-radius:20px;
-    padding:36px 32px; position:relative; transition:all .3s var(--ease);
-  }
-  .lp-plan:hover { border-color:var(--bord2); transform:translateY(-4px); }
-  .lp-plan.featured {
-    background:linear-gradient(145deg,#1c2334,#161b27);
-    border-color:rgba(245,166,35,.3);
-    box-shadow:0 0 0 1px rgba(245,166,35,.08), 0 32px 80px rgba(0,0,0,.5);
-  }
-  .lp-plan-badge {
-    position:absolute; top:-1px; left:50%; transform:translateX(-50%);
-    font-family:var(--mono); font-size:.62rem; letter-spacing:1.5px; text-transform:uppercase;
-    color:#000; background:var(--gold); padding:4px 16px;
-    border-radius:0 0 10px 10px; white-space:nowrap;
-  }
-  .lp-plan-name { font-family:var(--disp); font-size:1rem; font-weight:700; letter-spacing:-.3px; color:var(--w); margin-bottom:8px; }
-  .lp-plan-desc { font-size:.8rem; color:var(--w40); line-height:1.65; margin-bottom:28px; }
-  .lp-plan-price {
-    font-family:var(--disp); font-size:2.6rem; font-weight:800; letter-spacing:-1.5px;
-    color:var(--w); margin-bottom:4px; line-height:1;
-  }
-  .lp-plan-price span { font-size:1rem; font-weight:400; color:var(--w40); letter-spacing:0; }
-  .lp-plan-divider { height:1px; background:var(--border); margin:24px 0; }
-  .lp-plan-features { display:flex; flex-direction:column; gap:10px; margin-bottom:32px; }
-  .lp-plan-feature { display:flex; align-items:center; gap:10px; font-size:.82rem; color:var(--w70); }
-  .lp-plan-check {
-    width:18px; height:18px; border-radius:5px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:10px;
-  }
-  .lp-plan-check.on  { background:rgba(94,196,161,.12); border:1px solid rgba(94,196,161,.22); color:var(--sage); }
-  .lp-plan-check.off { background:var(--w08); border:1px solid var(--border); color:var(--w20); }
-  .lp-plan-btn {
-    width:100%; font-family:var(--sans); font-size:.88rem; font-weight:600; cursor:pointer;
-    padding:13px; border-radius:10px; transition:all .25s var(--ease);
-  }
-  .lp-plan-btn.outline { color:var(--w70); background:var(--w08); border:1px solid var(--bord2); }
-  .lp-plan-btn.outline:hover { color:var(--w); background:rgba(255,255,255,.12); }
-  .lp-plan-btn.primary { color:#000; background:var(--gold); border:none; box-shadow:0 6px 24px rgba(245,166,35,.28); }
-  .lp-plan-btn.primary:hover { background:var(--gold2); box-shadow:0 10px 32px rgba(245,166,35,.4); }
 
   /* ─────────── FAQ ─────────── */
   .lp-faq { padding:110px 0; background:var(--bg2); border-top:1px solid var(--border); }
@@ -649,36 +561,23 @@ const CSS = `
      MOBILE RESPONSIVE — ≤ 768px
   ══════════════════════════════════════════ */
   @media (max-width: 768px) {
-
-    /* ── NAV ── */
     .lp-nav { padding: 0 20px; height: 58px; }
     .lp-nav-links { display: none; }
     .lp-nav-right  { display: none; }
     .lp-nav-hamburger { display: flex; }
-
-    /* ── SHARED ── */
     .lp-inner { padding: 0 20px; }
-
-    /* ── HERO ── */
     .lp-hero {
       grid-template-columns: 1fr;
       padding: 90px 20px 60px;
       gap: 0;
       min-height: auto;
     }
-    .lp-hero-h1 {
-      font-size: clamp(2.4rem, 10vw, 3.4rem);
-      letter-spacing: -1.5px;
-    }
+    .lp-hero-h1 { font-size: clamp(2.4rem, 10vw, 3.4rem); letter-spacing: -1.5px; }
     .lp-hero-p { font-size: .95rem; }
     .lp-hero-actions { flex-direction: column; align-items: stretch; }
     .lp-hero-actions button { text-align: center; }
     .btn-gold-lg, .btn-outline-lg { padding: 14px 24px; font-size: .92rem; }
-
-    /* Hide floating cards on mobile, show a simple status card instead */
     .lp-hero-visual { display: none; }
-
-    /* Mobile hero visual replacement */
     .lp-hero-mobile-card {
       display: flex !important;
       flex-direction: column; gap: 10px;
@@ -692,77 +591,34 @@ const CSS = `
       font-family: var(--mono); font-size: .72rem; color: var(--w70);
     }
     .lp-hero-mobile-pill .fc-pill { font-size: .65rem; }
-
-    /* ── METRICS STRIP ── */
-    .lp-metrics-inner {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .lp-metric {
-      padding: 28px 20px;
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
+    .lp-metrics-inner { grid-template-columns: repeat(2, 1fr); }
+    .lp-metric { padding: 28px 20px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
     .lp-metric:nth-child(2) { border-right: none; }
     .lp-metric:nth-child(3) { border-bottom: none; }
     .lp-metric:nth-child(4) { border-right: none; border-bottom: none; }
     .lp-metric-num { font-size: 1.9rem; }
-
-    /* ── HOW IT WORKS ── */
     .lp-how { padding: 70px 0; }
     .lp-how-header { margin-bottom: 44px; }
-    .lp-how-steps {
-      grid-template-columns: 1fr 1fr;
-      gap: 32px 0;
-    }
+    .lp-how-steps { grid-template-columns: 1fr 1fr; gap: 32px 0; }
     .lp-how-steps::before { display: none; }
     .lp-step { padding: 0 20px; }
-
-    /* ── SERVICES ── */
     .lp-services { padding: 70px 0; }
     .lp-srv-grid { grid-template-columns: 1fr; }
     .lp-srv { padding: 28px 24px; }
-
-    /* ── TRACK ── */
-    .lp-track-belt { padding: 0 0 60px; }
-    .lp-track-card { padding: 28px 20px; margin: 0 20px; border-radius: 16px; }
-    .lp-track-inner { grid-template-columns: 1fr; gap: 24px; }
-    .lp-track-row { flex-direction: column; align-items: stretch; }
-    .lp-track-wrap { min-width: unset; }
-
-    /* ── TESTIMONIALS ── */
     .lp-testimonials { padding: 70px 0; }
     .lp-testi-grid { grid-template-columns: 1fr; }
-
-    /* ── PRICING ── */
-    .lp-pricing { padding: 70px 0; }
-    .lp-pricing-grid { grid-template-columns: 1fr; }
-    .lp-plan.featured { order: -1; }
-
-    /* ── FAQ ── */
     .lp-faq { padding: 70px 0; }
     .lp-faq-q { font-size: .88rem; }
-
-    /* ── FINAL CTA ── */
     .lp-final { padding: 80px 20px; }
     .lp-final-actions { flex-direction: column; align-items: stretch; }
     .lp-final-actions button { text-align: center; }
-
-    /* ── FOOTER ── */
     .lp-footer { padding: 48px 20px 32px; }
-    .lp-footer-top {
-      grid-template-columns: 1fr 1fr;
-      gap: 36px 24px;
-    }
-    .lp-footer-top > div:first-child {
-      grid-column: 1 / -1;
-    }
-    .lp-footer-bottom {
-      flex-direction: column; align-items: flex-start; gap: 16px;
-    }
+    .lp-footer-top { grid-template-columns: 1fr 1fr; gap: 36px 24px; }
+    .lp-footer-top > div:first-child { grid-column: 1 / -1; }
+    .lp-footer-bottom { flex-direction: column; align-items: flex-start; gap: 16px; }
     .lp-footer-legal { flex-wrap: wrap; gap: 12px; }
   }
 
-  /* ── Very small phones ── */
   @media (max-width: 420px) {
     .lp-hero-h1 { font-size: 2.2rem; letter-spacing: -1px; }
     .lp-how-steps { grid-template-columns: 1fr; }
@@ -770,7 +626,6 @@ const CSS = `
     .lp-hero-badge { font-size: .6rem; }
   }
 
-  /* ── Tablet ── */
   @media (min-width: 769px) and (max-width: 1024px) {
     .lp-inner { padding: 0 32px; }
     .lp-nav { padding: 0 32px; }
@@ -783,16 +638,12 @@ const CSS = `
     .lp-step { padding: 0 16px; }
     .lp-srv-grid { grid-template-columns: repeat(2,1fr); }
     .lp-testi-grid { grid-template-columns: 1fr; }
-    .lp-pricing-grid { grid-template-columns: 1fr; }
     .lp-footer { padding: 48px 32px 32px; }
     .lp-footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
     .lp-footer-top > div:first-child { grid-column: 1 / -1; }
-    .lp-track-card { padding: 32px; }
-    .lp-track-inner { gap: 24px; }
   }
 `;
 
-/* ── Ticker items ── */
 const TICKER = [
   "SPK-009123 delivered to Kisumu",
   "SPK-009124 collected in Westlands",
@@ -807,24 +658,19 @@ const TICKER = [
 
 const FAQS = [
   { q: "How long does countrywide delivery take?", a: "Standard delivery to all 47 counties takes 1–3 business days. Express same-day is available within Nairobi and major towns (Mombasa, Kisumu, Nakuru, Eldoret) with a guaranteed 6 pm cutoff." },
-  { q: "How do I track my parcel?", a: "Every booking generates a unique SPK tracking ID. Enter it in the Track page or on our homepage, and you'll see live GPS status at every checkpoint. You'll also receive SMS and WhatsApp updates automatically." },
   { q: "What items can I send?", a: "We handle documents, clothing, electronics, fragile items (with special packaging), and bulk business shipments. Prohibited items include perishables, liquids, hazardous materials, and anything restricted by Kenyan law." },
   { q: "Can I insure my parcel?", a: "Yes — optional cover up to KSh 100,000 is available at checkout for an additional fee. Recommended for electronics, jewellery, and high-value goods." },
   { q: "Do you offer API integration for businesses?", a: "Absolutely. Our Business API supports booking, tracking, webhook callbacks, and bulk manifests. Visit the Developer Docs or contact our team for a sandbox key." },
   { q: "What if the recipient is unavailable?", a: "The rider will attempt delivery twice. On the second failed attempt, the parcel is held at the nearest SpeedPak agent point for up to 5 days. The recipient is notified via SMS with collection instructions." },
 ];
 
-// Map nav keys to section IDs for scroll behaviour
 const SCROLL_SECTIONS = {
   services: "section-services",
-  track:    "section-track",
-  pricing:  "section-pricing",
 };
 
 export default function LandingPage({ setPage }) {
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
-  const [trackVal, setTrackVal] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -833,7 +679,6 @@ export default function LandingPage({ setPage }) {
     return () => window.removeEventListener("scroll", h);
   }, []);
 
-  // Close menu on scroll
   useEffect(() => {
     if (menuOpen) {
       const h = () => setMenuOpen(false);
@@ -842,18 +687,15 @@ export default function LandingPage({ setPage }) {
     }
   }, [menuOpen]);
 
-  // Scroll to an in-page section by ID
   const scrollTo = (id) => {
     setMenuOpen(false);
     const el = document.getElementById(id);
     if (el) {
-      // Offset by nav height (64px)
       const top = el.getBoundingClientRect().top + window.scrollY - 72;
       window.scrollTo({ top, behavior: "smooth" });
     }
   };
 
-  // Route to another page OR scroll to a section on this page
   const handleNav = (pg) => {
     setMenuOpen(false);
     if (SCROLL_SECTIONS[pg]) {
@@ -874,15 +716,13 @@ export default function LandingPage({ setPage }) {
           SpeedPak
         </div>
         <div className="lp-nav-links">
-          {[["home","Home"],["services","Services"],["track","Track"],["pricing","Pricing"],["about","About"],["admin","Admin"]].map(([pg,lbl]) => (
+          {[["home","Home"],["services","Services"],["about","About"],["admin","Admin"]].map(([pg,lbl]) => (
             <span key={pg} onClick={() => handleNav(pg)}>{lbl}</span>
           ))}
         </div>
         <div className="lp-nav-right">
-          <button className="btn-ghost" onClick={() => scrollTo("section-track")}>Track Parcel</button>
-          <button className="btn-gold"  onClick={() => handleNav("book")}>Send Now →</button>
+          <button className="btn-gold" onClick={() => handleNav("book")}>Send Now →</button>
         </div>
-        {/* Hamburger */}
         <button
           className={`lp-nav-hamburger${menuOpen ? " open" : ""}`}
           onClick={() => setMenuOpen(o => !o)}
@@ -894,12 +734,11 @@ export default function LandingPage({ setPage }) {
 
       {/* Mobile drawer */}
       <div className={`lp-mobile-menu${menuOpen ? " open" : ""}`}>
-        {[["home","Home"],["services","Services"],["track","Track"],["pricing","Pricing"],["about","About"],["admin","Admin"]].map(([pg,lbl]) => (
+        {[["home","Home"],["services","Services"],["about","About"],["admin","Admin"]].map(([pg,lbl]) => (
           <div className="lp-mobile-menu-link" key={pg} onClick={() => handleNav(pg)}>{lbl}</div>
         ))}
         <div className="lp-mobile-menu-actions">
-          <button className="btn-ghost" onClick={() => scrollTo("section-track")}>Track Parcel</button>
-          <button className="btn-gold"  onClick={() => handleNav("book")}>Send Now →</button>
+          <button className="btn-gold" onClick={() => handleNav("book")}>Send Now →</button>
         </div>
       </div>
 
@@ -911,7 +750,6 @@ export default function LandingPage({ setPage }) {
           <div className="lp-hero-orb-b" />
         </div>
 
-        {/* LEFT */}
         <div className="lp-hero-copy">
           <div className="lp-hero-badge">
             <div className="lp-hero-badge-dot" />
@@ -926,7 +764,6 @@ export default function LandingPage({ setPage }) {
           </p>
           <div className="lp-hero-actions">
             <button className="btn-gold-lg" onClick={() => handleNav("book")}>Send a Parcel →</button>
-            <button className="btn-outline-lg" onClick={() => scrollTo("section-track")}>Track Existing</button>
           </div>
           <div className="lp-hero-trust">
             <div className="lp-hero-trust-faces">
@@ -940,7 +777,6 @@ export default function LandingPage({ setPage }) {
             </div>
           </div>
 
-          {/* Mobile-only status cards (replaces floating card stack) */}
           <div className="lp-hero-mobile-card" style={{display:"none"}}>
             <div className="lp-hero-mobile-pill">
               <span className="fc-pill fc-transit"><span className="fc-pill-dot"/>In Transit</span>
@@ -957,7 +793,6 @@ export default function LandingPage({ setPage }) {
           </div>
         </div>
 
-        {/* RIGHT — floating card stack (desktop only) */}
         <div className="lp-hero-visual">
           <div className="lp-cards-scene">
             <div className="lp-glow-bg" />
@@ -1123,50 +958,6 @@ export default function LandingPage({ setPage }) {
         </div>
       </section>
 
-      {/* ── QUICK TRACK ── */}
-      <div className="lp-track-belt" id="section-track">
-        <div className="lp-inner">
-          <div className="lp-track-card">
-            <div className="lp-track-card-glow" />
-            <div className="lp-track-inner">
-              <div>
-                <div className="lp-track-title">Track your parcel</div>
-                <div className="lp-track-sub">Enter your SPK tracking ID for a live status update</div>
-                <div className="lp-track-row">
-                  <div className="lp-track-wrap">
-                    <span style={{fontSize:"1rem",color:"var(--w40)"}}>📦</span>
-                    <input
-                      value={trackVal}
-                      onChange={e => setTrackVal(e.target.value)}
-                      placeholder="e.g. SPK-009421"
-                      onKeyDown={e => e.key === "Enter" && handleNav("track")}
-                    />
-                  </div>
-                  <button className="btn-gold" style={{height:52,padding:"0 28px",fontSize:".9rem",borderRadius:11,flexShrink:0}} onClick={() => handleNav("track")}>
-                    Track →
-                  </button>
-                </div>
-              </div>
-              <div style={{display:"flex",flexDirection:"column",gap:14,minWidth:200}}>
-                {[
-                  {icon:"🟢", lbl:"Delivered today",     val:"843 parcels"},
-                  {icon:"🟡", lbl:"In transit right now", val:"312 parcels"},
-                  {icon:"🔵", lbl:"Out for collection",  val:"127 riders"},
-                ].map(s => (
-                  <div key={s.lbl} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:"var(--bg)",border:"1px solid var(--border)",borderRadius:10}}>
-                    <span style={{fontSize:"1rem"}}>{s.icon}</span>
-                    <div>
-                      <div style={{fontSize:".72rem",color:"var(--w40)",fontFamily:"var(--mono)"}}>{s.lbl}</div>
-                      <div style={{fontSize:".85rem",fontWeight:600,color:"var(--w)",marginTop:1}}>{s.val}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* ── TESTIMONIALS ── */}
       <section className="lp-testimonials">
         <div className="lp-inner">
@@ -1190,65 +981,6 @@ export default function LandingPage({ setPage }) {
                     <div className="lp-testi-role">{t.role}</div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── PRICING ── */}
-      <section className="lp-pricing" id="section-pricing">
-        <div className="lp-inner">
-          <div className="lp-pricing-header">
-            <div className="lp-eyebrow" style={{marginBottom:14}}>Transparent pricing</div>
-            <h2 className="lp-h2">Simple, <em>honest rates</em></h2>
-            <p className="lp-sub" style={{marginTop:12}}>No hidden fees. No surprises. Prices shown are for parcels up to 5 kg within Nairobi — upcountry rates displayed at checkout.</p>
-          </div>
-          <div className="lp-pricing-grid">
-            {[
-              {
-                name:"Standard", desc:"Reliable 1–3 day delivery anywhere in Kenya.", price:"299", unit:"/parcel",
-                features:["All 47 counties","SMS tracking updates","Standard packaging","Up to 5 kg"],
-                missing:["Same-day guarantee","Insured cover","API access"],
-                btn:"outline", badge:null,
-              },
-              {
-                name:"Express", desc:"Same-day delivery. Guaranteed by 6 pm.", price:"599", unit:"/parcel",
-                features:["All major towns","Live GPS tracking","Same-day guarantee","Insured up to KSh 50K","Up to 10 kg"],
-                missing:["API access"],
-                btn:"primary", badge:"Most popular", featured:true,
-              },
-              {
-                name:"Business", desc:"High volume, SLA guarantees, and full API.", price:"Custom", unit:"",
-                features:["Unlimited volume","Dedicated account manager","Full REST API access","Webhook callbacks","SLA agreement","Priority support"],
-                missing:[],
-                btn:"outline", badge:null,
-              },
-            ].map(p => (
-              <div className={`lp-plan${p.featured?" featured":""}`} key={p.name}>
-                {p.badge && <div className="lp-plan-badge">{p.badge}</div>}
-                <div className="lp-plan-name">{p.name}</div>
-                <div className="lp-plan-desc">{p.desc}</div>
-                <div className="lp-plan-price">
-                  {p.price === "Custom" ? "Custom" : `KSh ${p.price}`}
-                  {p.unit && <span>{p.unit}</span>}
-                </div>
-                <div className="lp-plan-divider"/>
-                <div className="lp-plan-features">
-                  {p.features.map(f => (
-                    <div className="lp-plan-feature" key={f}>
-                      <div className="lp-plan-check on">✓</div>{f}
-                    </div>
-                  ))}
-                  {p.missing.map(f => (
-                    <div className="lp-plan-feature" key={f} style={{opacity:.45}}>
-                      <div className="lp-plan-check off">–</div>{f}
-                    </div>
-                  ))}
-                </div>
-                <button className={`lp-plan-btn ${p.btn}`} onClick={() => handleNav("book")}>
-                  {p.name === "Business" ? "Contact Sales →" : "Get started →"}
-                </button>
               </div>
             ))}
           </div>
@@ -1307,7 +1039,7 @@ export default function LandingPage({ setPage }) {
             </div>
           </div>
           {[
-            {title:"Product",  links:["Book Delivery","Track Parcel","Business API","Coverage Map","Pricing"]},
+            {title:"Product",  links:["Book Delivery","Business API","Coverage Map"]},
             {title:"Company",  links:["About Us","Careers","Press","Blog","Contact"]},
             {title:"Support",  links:["Help Center","Rider Portal","Partner Program","Terms","Privacy"]},
           ].map(col => (

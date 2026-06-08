@@ -93,21 +93,6 @@ body{
   gap:12px;
 }
 
-.btn-ghost-nav{
-  background:none;
-  border:1px solid var(--border2);
-  color:var(--white70);
-  padding:9px 16px;
-  border-radius:10px;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.btn-ghost-nav:hover{
-  background:var(--white08);
-  color:white;
-}
-
 .btn-gold-sm{
   background:var(--gold);
   color:black;
@@ -233,15 +218,6 @@ body{
   padding:15px 28px;
   border-radius:12px;
   font-weight:700;
-  cursor:pointer;
-}
-
-.btn-hero-secondary{
-  background:var(--white08);
-  border:1px solid var(--border2);
-  color:white;
-  padding:15px 28px;
-  border-radius:12px;
   cursor:pointer;
 }
 
@@ -504,7 +480,6 @@ body{
     gap:8px;
   }
 
-  .btn-ghost-nav,
   .btn-gold-sm{
     padding:8px 12px;
     font-size:0.8rem;
@@ -554,7 +529,7 @@ const videoSteps = [
     mp4: "https://assets.mixkit.co/videos/42130/42130-720.mp4",
   },
   {
-    title: "Delivered to your door",
+    title: "Delivered within nairobi",
     desc: "Recipient receives alerts and digital proof of delivery instantly.",
     mp4: "https://assets.mixkit.co/videos/31155/31155-720.mp4",
   },
@@ -586,13 +561,6 @@ export default function HomePage({ setPage }) {
         <div className="sp-nav-links"></div>
 
         <div className="sp-nav-cta">
-          <button
-            className="btn-ghost-nav"
-            onClick={() => setPage("track")}
-          >
-            Track Parcel
-          </button>
-
           <button
             className="btn-gold-sm"
             onClick={() => setPage("book")}
@@ -632,13 +600,6 @@ export default function HomePage({ setPage }) {
               onClick={() => setPage("book")}
             >
               Send a Parcel →
-            </button>
-
-            <button
-              className="btn-hero-secondary"
-              onClick={() => setPage("track")}
-            >
-              Track Existing
             </button>
           </div>
 
@@ -806,7 +767,6 @@ export default function HomePage({ setPage }) {
 
         <div className="sp-footer-links">
           <span>Services</span>
-          <span>Track</span>
           <span>Contact</span>
         </div>
 
