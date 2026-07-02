@@ -725,7 +725,7 @@ function Step1({ form, u, onNext }) {
   const [locError, setLocError] = useState("");
   const [locFound, setLocFound] = useState(false);
 
-  const detectRecipientLocation = () => {
+  const detectSenderLocation = () => {
     if (!navigator.geolocation) {
       setLocError("Location isn't supported on this device.");
       return;
@@ -736,24 +736,41 @@ function Step1({ form, u, onNext }) {
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
-        const { latitude, longitude } = pos.coords;
+        const { latitude, longitude, accuracy } = pos.coords;
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
           );
           const data = await res.json();
           const addr = data.address || {};
+          // Prefer the most specific real-world label first (street/estate/
+          // neighbourhood), falling back to broader areas only if needed.
           const place =
-            addr.county ||
-            addr.state_district ||
-            addr.city ||
-            addr.town ||
+            addr.road ||
+            addr.neighbourhood ||
+            addr.suburb ||
+            addr.quarter ||
+            addr.residential ||
             addr.village ||
-            addr.state ||
+            addr.town ||
+            addr.city_district ||
+            addr.city ||
+            addr.county ||
             data.display_name;
-          u("recipientCounty", place || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          const label =
+            addr.suburb && place !== addr.suburb
+              ? `${place}, ${addr.suburb}`
+              : place;
+          u("senderCounty", label || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+          // Flag low-accuracy fixes (e.g. Wi-Fi/IP based) so the user knows
+          // to double check the result rather than trust it blindly.
+          if (accuracy && accuracy > 200) {
+            setLocError(
+              `Location accuracy is low (~${Math.round(accuracy)}m). Confirm the field is correct or refine it manually.`
+            );
+          }
         } catch {
-          u("recipientCounty", `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          u("senderCounty", `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
         } finally {
           setLocating(false);
           setLocFound(true);
@@ -763,7 +780,7 @@ function Step1({ form, u, onNext }) {
         setLocating(false);
         setLocError("Couldn't detect location. Please turn on location access and try again, or enter it manually.");
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   };
 
@@ -779,8 +796,16 @@ function Step1({ form, u, onNext }) {
         </Field>
       </div>
       <Field label="Sender County">
-        <input className="bp-input" value={form.senderCounty} onChange={(e) => u("senderCounty", e.target.value)} />
+        <div className="bp-loc-row">
+          <input className="bp-input" value={form.senderCounty} onChange={(e) => u("senderCounty", e.target.value)} />
+          <button type="button" className="bp-loc-btn" onClick={detectSenderLocation} disabled={locating}>
+            {locating ? "Locating…" : "📍 Use my location"}
+          </button>
+        </div>
+        {locFound && !locError && <div className="bp-loc-note">Location detected and filled in above.</div>}
+        {locError && <div className="bp-loc-error">{locError}</div>}
       </Field>
+
       <Section num="B" title="Recipient Information" />
       <div className="bp-grid-2">
         <Field label="Recipient Name">
@@ -791,15 +816,9 @@ function Step1({ form, u, onNext }) {
         </Field>
       </div>
       <Field label="Recipient County">
-        <div className="bp-loc-row">
-          <input className="bp-input" value={form.recipientCounty} onChange={(e) => u("recipientCounty", e.target.value)} />
-          <button type="button" className="bp-loc-btn" onClick={detectRecipientLocation} disabled={locating}>
-            {locating ? "Locating…" : "📍 Use recipient's location"}
-          </button>
-        </div>
-        {locFound && !locError && <div className="bp-loc-note">Location detected and filled in above.</div>}
-        {locError && <div className="bp-loc-error">{locError}</div>}
+        <input className="bp-input" value={form.recipientCounty} onChange={(e) => u("recipientCounty", e.target.value)} />
       </Field>
+
       <Field label="Parcel Weight (kg)">
         <input className="bp-input" type="number" value={form.weight} onChange={(e) => u("weight", e.target.value)} />
       </Field>
